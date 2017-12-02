@@ -11,7 +11,7 @@ double Scalarfield::GridScalar(const int i, const int j) const
 
 double Scalarfield::Scalar(const double& x, const double& y) const
 {
-	// Local coordinates
+	// Local coordinates between [0..1]
 	double u = (x - mBox.min.x) / (mScaleX);
 	double v = (y - mBox.min.y) / (mScaleY);
 
@@ -19,9 +19,9 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	const unsigned row = unsigned(v * mScalars.size());
 	const unsigned col = unsigned(u * mScalars[0].size());
 
-	// Local coordinates within cell
-	v = v * 1 / mScalars.size() + row * 1 / mScalars.size();
-	u = u * 1 / mScalars[0].size() + col * 1 / mScalars[0].size();
+	// Local coordinates within cell between [0..1]
+	v = v * mScalars.size() - row;
+	u = u * mScalars.size() - col;
 
 	return BilinearInterpolation(row, col, u, v);
 }
