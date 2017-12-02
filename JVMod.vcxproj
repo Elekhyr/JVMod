@@ -111,6 +111,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Box.hpp" />
+    <ClInclude Include="Heightfield.hpp" />
+    <ClInclude Include="Mat3.hpp" />
+    <ClInclude Include="Mat4.hpp" />
+    <ClInclude Include="Multilayerfield.hpp" />
+    <ClInclude Include="Scalarfield.hpp" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Transform.hpp" />
+    <ClInclude Include="Vec2.hpp" />
+    <ClInclude Include="Vec3.hpp" />
+    <ClInclude Include="Vec4.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Heightfield.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Multilayerfield.cpp" />
+    <ClCompile Include="Scalarfield.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="heightfield.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
