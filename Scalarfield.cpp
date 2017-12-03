@@ -83,6 +83,15 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 	}
 }
 
+void Scalarfield::Save(const std::string& path)
+{
+	for (auto& v : mScalars)
+	{
+		for ()
+	}
+	stbi
+}
+
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)
 {
 	mMin = zmin;
@@ -107,9 +116,10 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		}
 		mScalars[row][col] = zmin + (zmax-zmin) * image_data[n] / 255;
 	}
-	
 	mScaleX = mBox.max.x - mBox.min.x;
 	mScaleY = mBox.max.y - mBox.min.y;
+
+	stbi_image_free(image_data);
 }
 
 double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col, const double& u, const double& v) const 

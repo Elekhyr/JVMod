@@ -22,6 +22,7 @@ public:
 	double Scalar(const double& x, const double& y) const;
 
 	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
+	void Save(const std::string& path);
 protected:
 
 	Boxd mBox;
