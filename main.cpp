@@ -9,5 +9,7 @@ int main()
 	Scalarfield field("heightfield.png", box, 10, 12);
 
 	field.ExportToObj("field.obj", 300, 300);
+
+	field.Save("saved.png");
 	return 0;
 }
