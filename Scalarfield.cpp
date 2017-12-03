@@ -3,6 +3,7 @@
 #include "Scalarfield.hpp"
 #include <fstream>
 #include <iostream>
+#include <array>
 
 double Scalarfield::GridScalar(const int i, const int j) const
 {
@@ -28,6 +29,12 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 
 void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX, const unsigned nbPointsY) const
 {
+	std::vector<std::array<unsigned, 3>> faces;
+	faces.reserve(nbPointsX * nbPointsY * 2);
+
+	unsigned n = 0;
+	unsigned i = 0;
+
 	std::ofstream file;
 	file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
 
@@ -42,17 +49,36 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 
 	if (file.is_open())
 	{
-		file << "o heightfield\n\n";
+		file << "g heightfield\n\n";
 
 		const double step_x = mScaleX / double(nbPointsX);
 		const double step_y = mScaleY / double(nbPointsY);
-		for (double x = mBox.min.x; x < mBox.max.x; x += step_x)
+		for (double x = mBox.min.x; i < nbPointsX; x += step_x, ++i)
 		{
-			for (double y = mBox.min.y; y < mBox.max.y; y += step_y)
+			unsigned j = 0;
+			for (double y = mBox.min.y; j < nbPointsY; y += step_y, ++j)
 			{
 				file << "v " << x/ mBox.max.x << " " << y/ mBox.max.y << " " << Scalar(x, y)/mMax << "\n";
+				
+				if (i < nbPointsX - 1 && j < nbPointsY - 1)
+				{
+					faces.push_back({ n + j + 2,
+						n + j + 1, 
+						n + j + nbPointsX + 1});
+					faces.push_back({ n + j + nbPointsX + 1, 
+						n + j + nbPointsX + 2, 
+						n + j + 2 });
+				}
 			}
+			n += j;
 		}
+
+		file << "\n\n";
+		for (auto& f : faces)
+		{
+			file << "f " << f[0] << " " << f[1] << " " << f[2] << " \n";
+		}
+
 		file.close();
 	}
 }

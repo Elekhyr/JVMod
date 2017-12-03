@@ -9,6 +9,6 @@ const Scalarfield& Multilayerfield::_Field(const std::string& field) const
 {
 	const auto it = mFields.find(field);
 	if (it == mFields.end())
-		throw std::exception("Field not found");
+		throw  std::runtime_error("Field not found");
 	return it->second;
 }
