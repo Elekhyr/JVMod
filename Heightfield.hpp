@@ -9,9 +9,18 @@
 */
 #pragma once
 #include "Scalarfield.hpp"
+#include "Vec3.hpp"
 
 class Heightfield
 	: public Scalarfield
 {
-	
+public:
+	Heightfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax)
+		: Scalarfield(imagePath, boudingBox, zmin, zmax)
+	{
+	}
+
+	double Height(double x, double y) const;
+	Math::Vec3d Normal(double x, double y) const;
+	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;
 };
