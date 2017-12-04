@@ -50,10 +50,10 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 
 		const double step_x = mScaleX / double(nbPointsX);
 		const double step_y = mScaleY / double(nbPointsY);
-		for (double x = mBox.min.x; i < nbPointsX; x += step_x, ++i)
+		for (double x = mBox.a.x; i < nbPointsX; x += step_x, ++i)
 		{
 			unsigned j = 0;
-			for (double y = mBox.min.y; j < nbPointsY; y += step_y, ++j)
+			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
 				double z = Scalar(x, y);
 				file << "v " << x << " " << y << " " << z << "\n";

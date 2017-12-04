@@ -6,6 +6,11 @@
 #include <iostream>
 #include <array>
 
+const Boxd& Scalarfield::_Box() const
+{
+	return mBox;
+}
+
 double Scalarfield::GridScalar(const int i, const int j) const
 {
 	return mScalars[i][j];
@@ -14,8 +19,8 @@ double Scalarfield::GridScalar(const int i, const int j) const
 double Scalarfield::Scalar(const double& x, const double& y) const
 {
 	// Local coordinates between [0..1]
-	double u = (x - mBox.min.x) / (mScaleX);
-	double v = (y - mBox.min.y) / (mScaleY);
+	double u = (x - mBox.a.x) / (mScaleX);
+	double v = (y - mBox.a.y) / (mScaleY);
 
 	// Cell location within grid
 	const unsigned row = unsigned(v * mScalars.size());
@@ -54,10 +59,10 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 
 		const double step_x = mScaleX / double(nbPointsX);
 		const double step_y = mScaleY / double(nbPointsY);
-		for (double x = mBox.min.x; i < nbPointsX; x += step_x, ++i)
+		for (double x = mBox.a.x; i < nbPointsX; x += step_x, ++i)
 		{
 			unsigned j = 0;
-			for (double y = mBox.min.y; j < nbPointsY; y += step_y, ++j)
+			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
 				file << "v " << x << " " << y << " " << Scalar(x, y) << "\n";
 				
@@ -93,7 +98,7 @@ void Scalarfield::Save(const std::string& path)
 	{
 		for (unsigned j = 0; j < mScalars[i].size(); ++j)
 		{
-			data[n] = unsigned((mScalars[i][j] - mMin) * 255 / (mMax - mMin));
+			data[n] = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
 			++n;
 		}
 	}
@@ -105,8 +110,8 @@ void Scalarfield::Save(const std::string& path)
 
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)
 {
-	mMin = zmin;
-	mMax = zmax;
+	mZMin = zmin;
+	mZMax = zmax;
 
 	mBox = boudingBox;
 	
@@ -127,8 +132,8 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		}
 		mScalars[row][col] = zmin + (zmax-zmin) * image_data[n] / 255;
 	}
-	mScaleX = mBox.max.x - mBox.min.x;
-	mScaleY = mBox.max.y - mBox.min.y;
+	mScaleX = mBox.b.x - mBox.a.x;
+	mScaleY = mBox.b.y - mBox.a.y;
 
 	stbi_image_free(image_data);
 }

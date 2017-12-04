@@ -18,6 +18,8 @@ public:
 	Scalarfield() = default;
 	Scalarfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax);
 
+	const Boxd& _Box() const;
+
 	double GridScalar(int i, int j) const;
 	double Scalar(const double& x, const double& y) const;
 
@@ -29,8 +31,8 @@ protected:
 	double mScaleX;
 	double mScaleY;
 
-	double mMin;
-	double mMax;
+	double mZMin;
+	double mZMax;
 	std::vector<std::vector<double>> mScalars;
 
 private:

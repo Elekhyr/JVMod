@@ -3,11 +3,11 @@
 int main()
 {
 	Boxd box;
-	box.min = Math::Vec2d(0, 0);
-	box.max = Math::Vec2d(10000, 10000);
-	Scalarfield field("heightfield.png", box, 0, 500);
+	box.a = Math::Vec2d(0, 0);
+	box.b = Math::Vec2d(1000, 1000);
+	Scalarfield field("heightfield.png", box, 0, 700);
 
-	field.ExportToObj("sfield.obj", 100, 100);
+	field.ExportToObj("field.obj", 500, 500);
 
 	field.Save("saved.png");
 	return 0;
