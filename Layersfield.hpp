@@ -15,9 +15,9 @@
 class Layersfield : public Field
 {
 public:
-
 	void AddField(const std::string& name, const Scalarfield& field);
 	const Scalarfield& _Field(const std::string& field) const;
+	const Boxd& _Box() const;
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
