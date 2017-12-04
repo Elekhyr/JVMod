@@ -7,12 +7,8 @@
  * \copyright Copyright (c) 2017 Romain Maurizot, Thomas Margier, Loïs Paulin
  *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
  */
-
-#ifndef Field_hpp
-#define Field_hpp
+#pragma once
 
 class Field {
-	virtual double Height() = 0;
+	virtual double Height(const double& x, const double& y) const = 0;
 };
-
-#endif /* Field_hpp */

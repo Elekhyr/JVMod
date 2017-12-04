@@ -3,7 +3,7 @@
 #include <iostream>
 #include <array>
 
-double Heightfield::Height(const double x, const double y) const
+double Heightfield::Height(const double& x, const double& y) const
 {
 	return Scalar(x, y);
 }
@@ -13,11 +13,13 @@ Math::Vec3d Heightfield::Normal(const double x, const double y) const
 	const double epsilon_x = 1 / mScaleX;
 	const double epsilon_y = 1 / mScaleY;
 
-	Math::Vec3d a(x, y, Scalar(x, y));
+	Math::Vec3d a(x - epsilon_x, y, Scalar(x - epsilon_x, y));
 	Math::Vec3d b(x + epsilon_x, y, Scalar(x + epsilon_x, y));
-	Math::Vec3d c(x, y + epsilon_y, Scalar(x, y + epsilon_y));
+	
+	Math::Vec3d c(x, y - epsilon_y, Scalar(x, y - epsilon_y));
+	Math::Vec3d d(x, y + epsilon_y, Scalar(x, y + epsilon_y));
 
-	return (b-a) * (c-a);
+	return (b-a) * (d-c);
 }
 
 void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const

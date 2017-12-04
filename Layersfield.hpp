@@ -12,7 +12,7 @@
 #include "Field.hpp"
 #include "Scalarfield.hpp"
 
-class Multilayerfield : public Field
+class Layersfield : public Field
 {
 public:
 
