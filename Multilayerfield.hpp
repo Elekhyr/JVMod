@@ -8,10 +8,11 @@
 *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
 */
 #pragma once
-#include "Scalarfield.hpp"
 #include <unordered_map>
+#include "Field.hpp"
+#include "Scalarfield.hpp"
 
-class Multilayerfield
+class Multilayerfield : public Field
 {
 public:
 

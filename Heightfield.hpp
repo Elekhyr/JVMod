@@ -8,11 +8,12 @@
 *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
 */
 #pragma once
+#include "Field.hpp"
 #include "Scalarfield.hpp"
 #include "Vec3.hpp"
 
 class Heightfield
-	: public Scalarfield
+	: public Field, public Scalarfield
 {
 public:
 	Heightfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax)
