@@ -59,7 +59,7 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 			unsigned j = 0;
 			for (double y = mBox.min.y; j < nbPointsY; y += step_y, ++j)
 			{
-				file << "v " << x/ mBox.max.x << " " << y/ mBox.max.y << " " << Scalar(x, y)/mMax << "\n";
+				file << "v " << x << " " << y << " " << Scalar(x, y) << "\n";
 				
 				if (i < nbPointsX - 1 && j < nbPointsY - 1)
 				{
@@ -93,12 +93,12 @@ void Scalarfield::Save(const std::string& path)
 	{
 		for (unsigned j = 0; j < mScalars[i].size(); ++j)
 		{
-			data[n] = (mScalars[i][j] - mMin) * 255 / (mMax - mMin);
+			data[n] = unsigned((mScalars[i][j] - mMin) * 255 / (mMax - mMin));
 			++n;
 		}
 	}
 	
-	stbi_write_png(path.c_str(), mScalars.size(), mScalars[0].size(), 1, data, mScalars.size());
+	stbi_write_png(path.c_str(), int(mScalars.size()), int(mScalars[0].size()), 1, data, int(mScalars.size()));
 	
 	delete[] data;
 }
