@@ -12,7 +12,7 @@
 #include "Scalarfield.hpp"
 
 class Heightfield
-	: public Field, public Scalarfield,
+	: public Field, public Scalarfield
 {
 	
 };
