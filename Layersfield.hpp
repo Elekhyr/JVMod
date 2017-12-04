@@ -1,5 +1,5 @@
 ﻿/**
-* \file Multilayerfield.hpp
+* \file Layersfield.hpp
 * \brief todo
 * \authors Crymsius, Elekhyr, Plopounet
 * \version 1.0
@@ -9,8 +9,8 @@
 */
 #pragma once
 #include <unordered_map>
-#include "Field.hpp"
 #include "Scalarfield.hpp"
+#include "Field.hpp"
 
 class Layersfield : public Field
 {
@@ -21,5 +21,6 @@ public:
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
-	
+	std::vector<std::string> mNames;
+	Boxd mBox;
 };

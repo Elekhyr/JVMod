@@ -11,14 +11,14 @@ struct Box
 	explicit Box(const Math::Vec3<T> points[]);
 
 	Box(const Box& other)
-		: min(other.min),
-		  max(other.max)
+		: a(other.a),
+		  b(other.b)
 	{
 	}
 
 	Box(Box&& other) noexcept
-		: min(std::move(other.min)),
-		  max(std::move(other.max))
+		: a(std::move(other.a)),
+		  b(std::move(other.b))
 	{
 	}
 
@@ -26,8 +26,8 @@ struct Box
 	{
 		if (this == &other)
 			return *this;
-		min = other.min;
-		max = other.max;
+		a = other.a;
+		b = other.b;
 		return *this;
 	}
 
@@ -35,15 +35,22 @@ struct Box
 	{
 		if (this == &other)
 			return *this;
-		min = std::move(other.min);
-		max = std::move(other.max);
+		a = std::move(other.a);
+		b = std::move(other.b);
+		return *this;
+	}
+
+	Box& operator+=(const Box& other) noexcept
+	{
+		a = min(a, other.a);
+		b = max(b, other.b);
 		return *this;
 	}
 
 	void Boundaries(const Math::Vec3<T> points[]);
 	
-	Math::Vec3<T> min;
-	Math::Vec3<T> max;
+	Math::Vec3<T> a;
+	Math::Vec3<T> b;
 };
 
 template <class T>
@@ -62,13 +69,13 @@ void Box<T>::Boundaries(const Math::Vec3<T> points[])
 {
 	for (unsigned i = 0; i < sizeof(points); ++i)
 	{
-		min.x = std::min(min.x, points[i].x);
-		min.y = std::min(min.y, points[i].y);
-		min.z = std::min(min.z, points[i].z);
+		a.x = std::min(a.x, points[i].x);
+		a.y = std::min(a.y, points[i].y);
+		a.z = std::min(a.z, points[i].z);
 
-		max.x = std::max(max.x, points[i].x);
-		max.y = std::max(max.y, points[i].y);
-		max.z = std::max(max.z, points[i].z);
+		b.x = std::max(b.x, points[i].x);
+		b.y = std::max(b.y, points[i].y);
+		b.z = std::max(b.z, points[i].z);
 	}
 }
 

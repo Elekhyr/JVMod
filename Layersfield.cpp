@@ -2,7 +2,10 @@
 
 void Layersfield::AddField(const std::string& name, const Scalarfield& field)
 {
+	mBox.a += field._Box().a;
+	mBox.b += field._Box().b;
 	mFields[name] = field;
+	mNames.push_back(name);
 }
 
 const Scalarfield& Layersfield::_Field(const std::string& field) const
