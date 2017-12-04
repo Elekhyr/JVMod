@@ -21,5 +21,6 @@ public:
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
+	std::vector<std::string> mNames;
 	Boxd mBox;
 };
