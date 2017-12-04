@@ -8,10 +8,11 @@
 *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
 */
 #pragma once
+#include "Field.hpp"
 #include "Scalarfield.hpp"
 
 class Heightfield
-	: public Scalarfield
+	: public Field, public Scalarfield,
 {
 	
 };
