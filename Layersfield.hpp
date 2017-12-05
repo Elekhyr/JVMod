@@ -18,6 +18,9 @@ public:
 	void AddField(const std::string& name, const Scalarfield& field);
 	const Scalarfield& _Field(const std::string& field) const;
 	const Boxd& _Box() const;
+	void Thermal(const int temp);
+	const Scalarfield& _HighestFieldGrid(const int indI, const int indJ) const;
+	const Scalarfield& _HighestField(const double& x, const double& y) const;
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
