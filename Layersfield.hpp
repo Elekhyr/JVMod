@@ -19,6 +19,13 @@ public:
 	const Scalarfield& _Field(const std::string& field) const;
 	const Boxd& _Box() const;
 
+	double Height(const double& x, const double& y) const override;
+	Math::Vec3d Slope(const double& x, const double& y) const override;
+	unsigned DrainArea(const double& x, const double& y) const override;
+	double Wetness(const double& x, const double& y) const override;
+	double StreamPower(const double& x, const double& y) const override;
+	double Light(const double& x, const double& y) const override;
+
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
 	std::vector<std::string> mNames;
