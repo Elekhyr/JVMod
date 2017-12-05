@@ -4,6 +4,7 @@ const Boxd& Layersfield::_Box() const
 {
 	return mBox;
 }
+
 const Scalarfield& Layersfield::_HighestFieldGrid(const int indI, const int indJ) const
 {
 	int highestLayerInd = 0;
@@ -26,6 +27,19 @@ const Scalarfield& Layersfield::_HighestField(const double& x, const double& y) 
 	return this->_Field(mNames[highestLayerInd]);
 }
 
+const std::vector<Math::Vec2i> Layersfield::_Voisin4(const int i, const int j) const
+{
+	std::vector<Math::Vec2i> voisins;
+
+	return voisins;
+}
+
+const std::vector<Math::Vec2i> Layersfield::_Voisin8(const int i, const int j) const
+{
+	std::vector<Math::Vec2i> voisins;
+
+	return voisins;
+}
 
 double Layersfield::Height(const double & x, const double & y) const
 {
@@ -78,7 +92,7 @@ void Layersfield::Thermal(const int temp)
 {
 	for (int i = 0; i < mScalars.size(); i++) {
 		for (int j = 0; j < mScalars[0].size(); j++) {
-			//WIP
+
 		}
 	}
 }

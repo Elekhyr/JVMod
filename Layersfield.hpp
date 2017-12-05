@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include "Scalarfield.hpp"
 #include "Field.hpp"
+#include "Vec2.hpp"
 
 class Layersfield : public Field
 {
@@ -21,6 +22,10 @@ public:
 	void Thermal(const int temp);
 	const Scalarfield& _HighestFieldGrid(const int indI, const int indJ) const;
 	const Scalarfield& _HighestField(const double& x, const double& y) const;
+
+	const std::vector<Math::Vec2i> _Voisin4(const int i, const int j) const;
+	const std::vector<Math::Vec2i> _Voisin8(const int i, const int j) const;
+
 
 	double Height(const double& x, const double& y) const;
 	Math::Vec3d Slope(const double& x, const double& y) const;
