@@ -25,7 +25,9 @@ Math::Vec3d Heightfield::Normal(const double x, const double y) const
 	Math::Vec3d c(x, y - epsilon_y, Scalar(x, y - epsilon_y < 0 ? y : y - epsilon_y));
 	Math::Vec3d d(x, y + epsilon_y, Scalar(x, y + epsilon_y));
 
-	return (b-a) * (d-c);
+	auto n = ((b - a) * (d - c));
+	n.Normalize();
+	return n;
 }
 
 void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const

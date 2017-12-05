@@ -54,10 +54,6 @@ unsigned Scalarfield::GridYIndex(const double & y) const
 	return row;
 }
 
-unsigned Scalarfield::GridIndex(const double & x, const double & y) const
-{
-	return 0;
-}
 
 void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX, const unsigned nbPointsY) const
 {
