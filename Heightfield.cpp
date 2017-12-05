@@ -10,6 +10,7 @@ double Heightfield::Height(const double& x, const double& y) const
 
 Math::Vec3d Heightfield::Slope(const double & x, const double & y) const
 {
+
 	return Math::Vec3d();
 }
 
