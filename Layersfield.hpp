@@ -22,12 +22,12 @@ public:
 	const Scalarfield& _HighestFieldGrid(const int indI, const int indJ) const;
 	const Scalarfield& _HighestField(const double& x, const double& y) const;
 
-	double Height(const double& x, const double& y) const override;
-	Math::Vec3d Slope(const double& x, const double& y) const override;
-	unsigned DrainArea(const double& x, const double& y) const override;
-	double Wetness(const double& x, const double& y) const override;
-	double StreamPower(const double& x, const double& y) const override;
-	double Light(const double& x, const double& y) const override;
+	double Height(const double& x, const double& y) const;
+	Math::Vec3d Slope(const double& x, const double& y) const;
+	unsigned DrainArea(const double& x, const double& y) const;
+	double Wetness(const double& x, const double& y) const;
+	double StreamPower(const double& x, const double& y) const;
+	double Light(const double& x, const double& y) const;
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;

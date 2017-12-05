@@ -8,12 +8,13 @@
  *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
  */
 #pragma once
-#include "Vec3.hpp"
+#include "Vec2.hpp"
+#include "Box.hpp"
+
 class Field {
 	virtual double Height(const double& x, const double& y) const = 0;
-	virtual Math::Vec3d Slope(const double& x, const double& y) const = 0;
-	virtual unsigned DrainArea(const double& x, const double& y) const = 0;
-	virtual double Wetness(const double& x, const double& y) const = 0;
-	virtual double StreamPower(const double& x, const double& y) const = 0;
-	virtual double Light(const double& x, const double& y) const = 0;
+	virtual const Boxd& _Box() const = 0;
+	
+	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
+	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
 };
