@@ -9,6 +9,9 @@
  */
 #pragma once
 #include "Vec3.hpp"
+#include "Vec2.hpp"
+
 class Field {
 	virtual double Height(const double& x, const double& y) const = 0;
+	virtual double Height(const Math::Vec2d& pos) const = 0;
 };
