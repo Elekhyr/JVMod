@@ -29,6 +29,7 @@ public:
 	void Save(const std::string& path);
 protected:
 
+	friend class Layersfield;
 	Boxd mBox;
 	double mScaleX;
 	double mScaleY;
