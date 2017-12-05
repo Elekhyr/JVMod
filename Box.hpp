@@ -49,7 +49,7 @@ struct Box
 
 	void Boundaries(const Math::Vec3<T> points[]) const;
 	
-	bool IsInside(const Math::Vec3<T> point) const;
+	bool IsInside(const Math::Vec3<T>& point) const;
 
 
 	Math::Vec3<T> a;
@@ -83,7 +83,7 @@ void Box<T>::Boundaries(const Math::Vec3<T> points[]) const
 }
 
 template<class T>
-bool Box<T>::IsInside(const Math::Vec3<T> point) const
+bool Box<T>::IsInside(const Math::Vec3<T>& point) const
 {
 	return point.x < b.x && point.x > a.x
 		&& point.y < b.y && point.y > a.y

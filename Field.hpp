@@ -12,4 +12,8 @@
 class Field {
 	virtual double Height(const double& x, const double& y) const = 0;
 	virtual Math::Vec3d Slope(const double& x, const double& y) const = 0;
+	virtual unsigned DrainArea(const double& x, const double& y) const = 0;
+	virtual double Wetness(const double& x, const double& y) const = 0;
+	virtual double StreamPower(const double& x, const double& y) const = 0;
+	virtual double Light(const double& x, const double& y) const = 0;
 };

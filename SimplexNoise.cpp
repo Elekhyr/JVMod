@@ -1,6 +1,6 @@
 #include "SimplexNoise.hpp"
 
-inline double SimplexNoise::dot(const int* g, const double& x, const double& y) const
+double SimplexNoise::dot(const int* g, const double& x, const double& y) const
 {
   return g[0] * x + g[1] * y;
 }

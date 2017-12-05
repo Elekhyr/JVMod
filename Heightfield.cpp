@@ -14,6 +14,26 @@ Math::Vec3d Heightfield::Slope(const double & x, const double & y) const
 	return Math::Vec3d();
 }
 
+unsigned Heightfield::DrainArea(const double & x, const double & y) const
+{
+	return 0;
+}
+
+double Heightfield::Wetness(const double & x, const double & y) const
+{
+	return 0.0;
+}
+
+double Heightfield::StreamPower(const double & x, const double & y) const
+{
+	return 0.0;
+}
+
+double Heightfield::Light(const double & x, const double & y) const
+{
+	return 0.0;
+}
+
 Math::Vec3d Heightfield::Normal(const double x, const double y) const
 {
 	const double epsilon_x = 1 / mScaleX;
