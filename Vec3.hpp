@@ -329,4 +329,14 @@ namespace Math
 	Vec3<T> operator/ (const typename std::enable_if<std::is_arithmetic<T>::value, T>::type& rhs, Vec3<T> lhs) {
 		return lhs /= rhs;
 	}
+
+	template <typename T>
+	Vec3<T> min(const Vec3<T>& lhs, const Vec3<T>& rhs) {
+		return Vec3<T>(std::min(lhs.x, rhs.x), std::min(lhs.y, rhs.y), std::min(lhs.z, rhs.z));
+	}
+
+	template <typename T>
+	Vec3<T> max(const Vec3<T>& lhs, const Vec3<T>& rhs) {
+		return Vec3<T>(std::max(lhs.x, rhs.x), std::max(lhs.y, rhs.y), std::max(lhs.z, rhs.z));
+	}
 }

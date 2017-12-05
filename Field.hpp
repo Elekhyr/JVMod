@@ -8,7 +8,8 @@
  *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
  */
 #pragma once
-
+#include "Vec3.hpp"
 class Field {
 	virtual double Height(const double& x, const double& y) const = 0;
+	virtual Math::Vec3d Slope(const double& x, const double& y) const = 0;
 };
