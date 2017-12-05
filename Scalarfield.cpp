@@ -1,10 +1,10 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION 1
-#include "stb_image.h"
-#include "stb_image_write.h"
-#include "Scalarfield.hpp"
 #include <fstream>
 #include <iostream>
 #include <array>
+#include "stb_image.h"
+#include "stb_image_write.h"
+#include "Scalarfield.hpp"
 
 const Boxd& Scalarfield::_Box() const
 {

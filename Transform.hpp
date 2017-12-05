@@ -8,9 +8,9 @@
  *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
  */
 #pragma once
-#include "Mat4.hpp"
 #include <stdexcept>
 #include <cmath>
+#include "Mat4.hpp"
 
 namespace Math
 {

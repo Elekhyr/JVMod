@@ -10,10 +10,10 @@
 #pragma once
 #include <type_traits>
 #include <ostream>
-#include "Vec4.hpp"
-#include "Mat3.hpp"
 #include <stdexcept>
 #include <cmath>
+#include "Vec4.hpp"
+#include "Mat3.hpp"
 
 namespace Math
 {

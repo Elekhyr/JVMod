@@ -8,9 +8,9 @@
 *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
 */
 #pragma once
+#include <vector>
 #include "Vec2.hpp"
 #include "Box.hpp"
-#include <vector>
 
 class Scalarfield
 {
