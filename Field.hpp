@@ -13,8 +13,9 @@
 
 class Field {
 	virtual double Height(const double& x, const double& y) const = 0;
+	virtual double Height(const Math::Vec2d& pos) const = 0;
 	virtual const Boxd& _Box() const = 0;
 	
-	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
-	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
+	virtual double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const = 0;
+	virtual bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const = 0;
 };

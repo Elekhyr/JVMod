@@ -106,9 +106,5 @@ _Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
-	for (int i = 0; i < mScalars.size(); i++) {
-		for (int j = 0; j < mScalars[0].size(); j++) {
-			//WIP
-		}
-	}
+
 }
