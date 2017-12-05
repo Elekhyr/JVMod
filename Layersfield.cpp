@@ -1,5 +1,10 @@
 ﻿#include "Layersfield.hpp"
 
+const Boxd& Layersfield::_Box() const
+{
+	return mBox;
+}
+
 void Layersfield::AddField(const std::string& name, const Scalarfield& field)
 {
 	mBox.a += field._Box().a;
