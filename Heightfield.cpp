@@ -8,6 +8,10 @@ double Heightfield::Height(const double& x, const double& y) const
 	return Scalar(x, y);
 }
 
+const Boxd& Heightfield::_Box() const{
+	return Scalarfield::_Box();
+}
+
 Math::Vec3d Heightfield::Normal(const double x, const double y) const
 {
 	const double epsilon_x = 1 / mScaleX;

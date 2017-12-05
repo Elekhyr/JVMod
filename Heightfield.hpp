@@ -22,6 +22,7 @@ public:
 	}
 
 	double Height(const double& x, const double& y) const override;
+	const Boxd& _Box() const override;
 
 	Math::Vec3d Normal(double x, double y) const;
 	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;
