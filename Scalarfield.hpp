@@ -22,6 +22,8 @@ public:
 
 	double GridScalar(int i, int j) const;
 	double Scalar(const double& x, const double& y) const;
+	unsigned GridXIndex(const double& x) const;
+	unsigned GridYIndex(const double& y) const;
 
 	virtual void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
 	void Save(const std::string& path);

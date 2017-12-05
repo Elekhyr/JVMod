@@ -9,6 +9,10 @@ int main()
 
 	field.ExportToObj("field.obj", 500, 500);
 
+	Heightfield hfield("heightfield.png", box, 0, 700);
+
+	hfield.ExportToObj("hfield.obj", 500, 500);
+
 	field.Save("saved.png");
 	return 0;
 }

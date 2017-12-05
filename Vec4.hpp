@@ -331,4 +331,14 @@ namespace Math
 	Vec4<T> operator/ (const typename std::enable_if<std::is_arithmetic<T>::value, T>::type& rhs, Vec4<T> lhs) {
 		return lhs /= rhs;
 	}
+
+	template <typename T>
+	Vec4<T> min (const Vec4<T>& lhs, const Vec4<T>& rhs) {
+		return Vec4<T>(std::min(lhs.x, rhs.x), std::min(lhs.y, rhs.y), std::min(lhs.z, rhs.z), std::min(lhs.w, rhs.w));
+	}
+
+	template <typename T>
+	Vec4<T> max(const Vec4<T>& lhs, const Vec4<T>& rhs) {
+		return Vec4<T>(std::max(lhs.x, rhs.x), std::max(lhs.y, rhs.y), std::max(lhs.z, rhs.z), std::max(lhs.w, rhs.w));
+	}
 }

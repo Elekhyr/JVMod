@@ -47,8 +47,11 @@ struct Box
 		return *this;
 	}
 
-	void Boundaries(const Math::Vec3<T> points[]);
+	void Boundaries(const Math::Vec3<T> points[]) const;
 	
+	bool IsInside(const Math::Vec3<T>& point) const;
+
+
 	Math::Vec3<T> a;
 	Math::Vec3<T> b;
 };
@@ -65,7 +68,7 @@ Box<T>::Box(const Math::Vec3<T> points[])
 }
 
 template <class T>
-void Box<T>::Boundaries(const Math::Vec3<T> points[])
+void Box<T>::Boundaries(const Math::Vec3<T> points[]) const
 {
 	for (unsigned i = 0; i < sizeof(points); ++i)
 	{
@@ -77,6 +80,14 @@ void Box<T>::Boundaries(const Math::Vec3<T> points[])
 		b.y = std::max(b.y, points[i].y);
 		b.z = std::max(b.z, points[i].z);
 	}
+}
+
+template<class T>
+bool Box<T>::IsInside(const Math::Vec3<T>& point) const
+{
+	return point.x < b.x && point.x > a.x
+		&& point.y < b.y && point.y > a.y
+		&& point.z < b.z && point.z > a.z;
 }
 
 using Boxi = Box<int>;

@@ -33,6 +33,28 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	return BilinearInterpolation(row, col, u, v);
 }
 
+unsigned Scalarfield::GridXIndex(const double & x) const
+{
+	// Local coordinates between [0..1]
+	double u = (x - mBox.a.x) / (mScaleX);
+
+	// Cell location within gri
+	const unsigned col = unsigned(u * mScalars[0].size());
+
+	return col;
+}
+
+unsigned Scalarfield::GridYIndex(const double & y) const
+{
+	// Local coordinates between [0..1]
+	double v = (y - mBox.a.y) / (mScaleY);
+
+	// Cell location within grid
+	const unsigned row = unsigned(v * mScalars.size());
+	return row;
+}
+
+
 void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX, const unsigned nbPointsY) const
 {
 	std::vector<std::array<unsigned, 3>> faces;

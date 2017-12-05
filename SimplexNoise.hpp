@@ -14,7 +14,7 @@ class SimplexNoise
 {
 public:
 	double At(const Math::Vec2d& p) const;
-	inline double dot(const int* g, const double& x, const double& y) const;
+	double dot(const int* g, const double& x, const double& y) const;
 private:
 	const int perm[512] = {
 	151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142,
