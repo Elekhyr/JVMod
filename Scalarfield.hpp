@@ -15,7 +15,7 @@
 class Scalarfield
 {
 public:
-	Scalarfield() = default;
+	Scalarfield();
 	Scalarfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax);
 
 	double GridScalar(int i, int j) const;

@@ -1,5 +1,4 @@
-﻿#define STB_IMAGE_IMPLEMENTATION 1
-#include "stb_image.h"
+﻿#include "stb_image.h"
 #include "stb_image_write.h"
 #include "Scalarfield.hpp"
 #include <fstream>
@@ -93,7 +92,7 @@ void Scalarfield::Save(const std::string& path)
 	{
 		for (unsigned j = 0; j < mScalars[i].size(); ++j)
 		{
-			data[n] = (mScalars[i][j] - mMin) * 255 / (mMax - mMin);
+			data[n] = unsigned char((mScalars[i][j] - mMin) * 255 / (mMax - mMin));
 			++n;
 		}
 	}
@@ -101,6 +100,10 @@ void Scalarfield::Save(const std::string& path)
 	stbi_write_png(path.c_str(), mScalars.size(), mScalars[0].size(), 1, data, mScalars.size());
 	
 	delete[] data;
+}
+
+Scalarfield::Scalarfield(): mScaleX(0), mScaleY(0), mMin(0), mMax(0)
+{
 }
 
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)

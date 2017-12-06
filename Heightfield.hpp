@@ -9,9 +9,16 @@
 */
 #pragma once
 #include "Scalarfield.hpp"
+#include "Noise.hpp"
 
 class Heightfield
 	: public Scalarfield
 {
+public:
+
+	Heightfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax,
+		const std::vector<std::vector<double>>& alphaMap, const Noise& noise);
 	
+
+
 };
