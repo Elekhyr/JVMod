@@ -36,9 +36,6 @@
     <ClInclude Include="Heightfield.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Multilayerfield.hpp">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Scalarfield.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -51,7 +48,13 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Noise.hpp">
+    <ClInclude Include="Layersfield.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalyticHeightField.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +68,13 @@
     <ClCompile Include="Heightfield.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Multilayerfield.cpp">
+    <ClCompile Include="Layersfield.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Noise.cpp">
+    <ClCompile Include="Field.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AnalyticHeightField.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

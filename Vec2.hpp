@@ -294,4 +294,14 @@ namespace Math
 	Vec2<T> operator/ (const typename std::enable_if<std::is_arithmetic<T>::value, T>::type& rhs, Vec2<T> lhs) {
 		return lhs /= rhs;
 	}
+
+	template <typename T>
+	Vec2<T> min(const Vec2<T>& lhs, const Vec2<T>& rhs) {
+		return Vec2<T>(std::min(lhs.x, rhs.x), std::min(lhs.y, rhs.y));
+	}
+
+	template <typename T>
+	Vec2<T> max(const Vec2<T>& lhs, const Vec2<T>& rhs) {
+		return Vec2<T>(std::max(lhs.x, rhs.x), std::max(lhs.y, rhs.y));
+	}
 }
