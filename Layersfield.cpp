@@ -1,5 +1,15 @@
 ﻿#include "Layersfield.hpp"
 
+
+Layersfield::Layersfield(const std::string& name, const Scalarfield& field)
+{
+	nx = field.mScalars[0].size();
+	ny = field.mScalars.size();
+	mBox = field.mBox;
+	mFields[name] = field;
+	mNames.push_back(name);
+}
+
 const Boxd& Layersfield::_Box() const
 {
 	return mBox;
@@ -30,14 +40,42 @@ const Scalarfield& Layersfield::_HighestField(const double& x, const double& y) 
 const std::vector<Math::Vec2i> Layersfield::_Voisin4(const int i, const int j) const
 {
 	std::vector<Math::Vec2i> voisins;
+	voisins.reserve(4);
 
+	if (i > 0)
+		voisins.push_back(Math::Vec2i(i-1, j));
+	if (j > 0)
+		voisins.push_back(Math::Vec2i(i, j-1));
+	if (i < nx)
+		voisins.push_back(Math::Vec2i(i+1, j));
+	if (j < ny)
+		voisins.push_back(Math::Vec2i(i, j+1));
 	return voisins;
 }
 
 const std::vector<Math::Vec2i> Layersfield::_Voisin8(const int i, const int j) const
 {
 	std::vector<Math::Vec2i> voisins;
+	voisins.reserve(8);
 
+	if (i > 0)
+		voisins.push_back(Math::Vec2i(i-1, j));
+	if (j > 0)
+		voisins.push_back(Math::Vec2i(i, j-1));
+	if (i < nx)
+		voisins.push_back(Math::Vec2i(i+1, j));
+	if (j < ny)
+		voisins.push_back(Math::Vec2i(i, j+1));
+	
+	if (i > 0 && j > 0)
+		voisins.push_back(Math::Vec2i(i-1, j-1));
+	if (i > 0 && j < ny)
+	voisins.push_back(Math::Vec2i(i-1, j+1));
+	if (i < nx && j > 0)
+	voisins.push_back(Math::Vec2i(i+1, j-1));
+	if (i < nx && j < ny)
+	voisins.push_back(Math::Vec2i(i+1, j+1));
+	
 	return voisins;
 }
 
@@ -103,8 +141,7 @@ double Layersfield::Light(const Math::Vec2d & pos) const
 
 void Layersfield::AddField(const std::string& name, const Scalarfield& field)
 {
-	mBox.a += field._Box().a;
-	mBox.b += field._Box().b;
+	if (field.mScalars.size() == ny && field.mScalars[0].size() == nx)
 	mFields[name] = field;
 	mNames.push_back(name);
 }
