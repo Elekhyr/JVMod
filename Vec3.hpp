@@ -10,9 +10,9 @@
 #pragma once
 #include <type_traits>
 #include <ostream>
-#include "Vec3.hpp"
 #include <stdexcept>
 #include <cmath>
+#include "Vec3.hpp"
 
 template <typename T>
 struct Vec2;

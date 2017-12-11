@@ -1,7 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <type_traits>
 #include "Vec3.hpp"
-#include <algorithm>
 
 template <class T>
 struct Box
