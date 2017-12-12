@@ -12,6 +12,17 @@
 #include "Vec2.hpp"
 #include "Box.hpp"
 
+enum class Color
+{
+	Gray,
+	Red,
+	Blue,
+	Green,
+	Purple,
+	Yellow,
+	Cyan
+};
+
 class Scalarfield
 {
 public:
@@ -26,10 +37,11 @@ public:
 	unsigned GridYIndex(const double& y) const;
 
 	virtual void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
-	void Save(const std::string& path);
+	void Save(const std::string& path, const Color& color = Color::Gray);
 protected:
 
 	friend class Layersfield;
+	friend class Heightfield;
 	Boxd mBox;
 	double mScaleX;
 	double mScaleY;
