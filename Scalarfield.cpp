@@ -11,11 +11,6 @@ const Boxd& Scalarfield::_Box() const
 	return mBox;
 }
 
-double Scalarfield::GridScalar(const int i, const int j) const
-{
-	return mScalars[j][i];
-}
-
 double Scalarfield::Scalar(const double& x, const double& y) const
 {
 	// Local coordinates between [0..1]
@@ -33,12 +28,12 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	return BilinearInterpolation(row, col, u, v);
 }
 
-double Scalarfield::Scalar(int i, int j) const
+double Scalarfield::Scalar(unsigned i, unsigned j) const
 {
 	return mScalars[j][i];
 }
 
-Math::Vec3d Scalarfield::Vertice(int i, int j) const
+Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
 {
 	double x = i / (double)mScalars[0].size() + mBox.a.x;
 	double y = j / (double)mScalars.size() + mBox.a.y;
@@ -213,8 +208,8 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		mScaleX = mBox.b.x - mBox.a.x;
 		mScaleY = mBox.b.y - mBox.a.y;
 
-		nx = mScalars[0].size();
-		ny = mScalars.size();
+		mNX = mScalars[0].size();
+		mNY = mScalars.size();
 		
 		stbi_image_free(image_data);
 	}
@@ -222,34 +217,34 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 
 double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col, const double& u, const double& v) const 
 {
-	double result = GridScalar(row, col);
+	double result = Scalar(row, col);
 	// Interpolation with the bottom and left cells
 	if (u + v < 1)
 	{
 		if (row + 1 < mScalars.size())
 		{
-			result -= v * GridScalar(row, col);
-			result += v * GridScalar(row + 1, col);
+			result -= v * Scalar(row, col);
+			result += v * Scalar(row + 1, col);
 		}
 
 		if (col + 1 < mScalars[0].size())
 		{
-			result -= u * GridScalar(row, col);
-			result += u * GridScalar(row, col + 1);
+			result -= u * Scalar(row, col);
+			result += u * Scalar(row, col + 1);
 		}
 	}
 	else // interpolation with the top and right cells
 	{
 		if (int(row) - 1 >= 0)
 		{
-			result -= v * GridScalar(row, col);
-			result += v * GridScalar(row - 1, col);
+			result -= v * Scalar(row, col);
+			result += v * Scalar(row - 1, col);
 		}
 
 		if (int(col) - 1 >= 0)
 		{
-			result -= u * GridScalar(row, col);
-			result += u * GridScalar(row, col - 1);
+			result -= u * Scalar(row, col);
+			result += u * Scalar(row, col - 1);
 		}
 	}
 

@@ -22,13 +22,17 @@ public:
 	{
 	}
 	
-	double Height(const double& x, const double& y) const override;
-	double Height(int i, int j) const override;
-	double Height(const Math::Vec2d& pos) const override;
-	const Boxd& _Box() const override;
+	virtual double Height(const double& x, const double& y) const override;
+	virtual double Height(const Math::Vec2d& pos) const override;
+	virtual Math::Vec3d Normal(unsigned i, unsigned j) const override;
+	virtual Math::Vec3d Vertex(unsigned i, unsigned j) const override;
+	virtual double Height(unsigned i, unsigned j) const override;
 
-	Math::Vec2d Slope(int x, int y) const override;
-	std::pair<Scalarfield, Scalarfield> SlopeMap() const override;
+	virtual const Boxd& _Box() const override;
+	virtual unsigned _SizeX() const override;
+	virtual unsigned _SizeY() const override;
+	unsigned _ScaleX() const override;
+	unsigned _ScaleY() const override;
 
 	Math::Vec3d Normal(double x, double y) const;
 	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;

@@ -31,16 +31,16 @@ public:
 
 	const Boxd& _Box() const;
 
-	double GridScalar(int i, int j) const;
 	double Scalar(const double& x, const double& y) const;
-	double Scalar(int i, int j) const;
-	Math::Vec3d Vertice(int i, int j) const;
+	double Scalar(unsigned i, unsigned j) const;
+	Math::Vec3d Vertice(unsigned i, unsigned j) const;
 	unsigned GridXIndex(const double& x) const;
 	unsigned GridYIndex(const double& y) const;
 
 	virtual void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
 	void Save(const std::string& path, const Color& color = Color::Gray);
 protected:
+	friend class Field;
 
 	friend class Layersfield;
 	friend class Heightfield;
@@ -60,8 +60,8 @@ protected:
 	std::vector<std::vector<double>> mScalars;
 
 	//taille d'une case
-	int nx;
-	int ny;
+	unsigned mNX;
+	unsigned mNY;
 
 private:
 	double BilinearInterpolation(unsigned row, unsigned col, const double& u, const double& v) const;

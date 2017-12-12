@@ -3,8 +3,8 @@
 
 Layersfield::Layersfield(const std::string& name, const Scalarfield& field)
 {
-	nx = field.mScalars[0].size();
-	ny = field.mScalars.size();
+	mNX = field.mScalars[0].size();
+	mNY = field.mScalars.size();
 	mBox = field.mBox;
 	mFields[name] = field;
 	mNames.push_back(name);
@@ -16,44 +16,64 @@ const Boxd& Layersfield::_Box() const
 	return mBox;
 }
 
-const std::vector<Math::Vec2i> Layersfield::_Voisin4(const int i, const int j) const
+unsigned Layersfield::_SizeX() const
 {
-	std::vector<Math::Vec2i> voisins;
+	return 0;
+}
+
+unsigned Layersfield::_SizeY() const
+{
+	return 0;
+}
+
+unsigned Layersfield::_ScaleX() const
+{
+	return 0;
+}
+
+unsigned Layersfield::_ScaleY() const
+{
+	return 0;
+}
+
+const std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const unsigned j) const
+{
+	std::vector<Math::Vec2u> voisins;
 	voisins.reserve(4);
 
 	if (i > 0)
-		voisins.push_back(Math::Vec2i(i-1, j));
+		voisins.push_back(Math::Vec2u(i-1, j));
 	if (j > 0)
-		voisins.push_back(Math::Vec2i(i, j-1));
-	if (i < nx)
-		voisins.push_back(Math::Vec2i(i+1, j));
-	if (j < ny)
-		voisins.push_back(Math::Vec2i(i, j+1));
+		voisins.push_back(Math::Vec2u(i, j-1));
+	if (i < mNX)
+		voisins.push_back(Math::Vec2u(i+1, j));
+	if (j < mNY)
+		voisins.push_back(Math::Vec2u(i, j+1));
 	return voisins;
 }
 
-const std::vector<Math::Vec2i> Layersfield::_Voisin8(const int i, const int j) const
+const std::vector<Math::Vec2u> Layersfield::_Voisin8(const unsigned i, const unsigned j) const
 {
-	std::vector<Math::Vec2i> voisins;
+	std::vector<Math::Vec2u> voisins;
 	voisins.reserve(8);
 
 	if (i > 0)
-		voisins.push_back(Math::Vec2i(i-1, j));
+		voisins.push_back(Math::Vec2u(i-1, j));
 	if (j > 0)
-		voisins.push_back(Math::Vec2i(i, j-1));
-	if (i < nx)
-		voisins.push_back(Math::Vec2i(i+1, j));
-	if (j < ny)
-		voisins.push_back(Math::Vec2i(i, j+1));
+		voisins.push_back(Math::Vec2u(i, j-1));
+	if (i < mNX)
+		voisins.push_back(Math::Vec2u(i+1, j));
+	if (j < mNY)
+		voisins.push_back(Math::Vec2u(i, j+1));
 	
 	if (i > 0 && j > 0)
-		voisins.push_back(Math::Vec2i(i-1, j-1));
-	if (i > 0 && j < ny)
-	voisins.push_back(Math::Vec2i(i-1, j+1));
-	if (i < nx && j > 0)
-	voisins.push_back(Math::Vec2i(i+1, j-1));
-	if (i < nx && j < ny)
-	voisins.push_back(Math::Vec2i(i+1, j+1));
+		voisins.push_back(Math::Vec2u(i-1, j-1));
+	if (i > 0 && j < mNY)
+	voisins.push_back(Math::Vec2u(i-1, j+1));
+	if (i < mNX && j > 0)
+	voisins.push_back(Math::Vec2u(i+1, j-1));
+	if (i < mNX && j < mNY)
+	voisins.push_back(Math::Vec2u(i+1, j+1));
 	
 	return voisins;
 }
@@ -67,46 +87,20 @@ double Layersfield::Height(const double & x, const double & y) const
 	return height;
 }
 
-double Layersfield::Height(int i, int j) const{
+double Layersfield::Height(unsigned i, unsigned j) const {
 	
 	double res = 0.;
 	for (auto& field : mFields){
 		res += field.second.Scalar(i, j);
 	}
 	return res;
-
 }
 
-Math::Vec3d Layersfield::Vertice(int i, int j) const
+Math::Vec3d Layersfield::Vertex(unsigned i, unsigned j) const
 {
-	double x = i / (double)nx + mBox.a.x;
-	double y = j / (double)ny + mBox.a.y;
+	double x = i / (double)mNX + mBox.a.x;
+	double y = j / (double)mNY + mBox.a.y;
 	return Math::Vec3d(x, y, Height(i,j));
-}
-
-Math::Vec3d Layersfield::Slope(const double & x, const double & y) const
-{
-	return Math::Vec3d();
-}
-
-unsigned Layersfield::DrainArea(const double & x, const double & y) const
-{
-	return 0;
-}
-
-double Layersfield::Wetness(const double & x, const double & y) const
-{
-	return 0.0;
-}
-
-double Layersfield::StreamPower(const double & x, const double & y) const
-{
-	return 0.0;
-}
-
-double Layersfield::Light(const double & x, const double & y) const
-{
-	return 0.0;
 }
 
 double Layersfield::Height(const Math::Vec2d & pos) const
@@ -114,34 +108,14 @@ double Layersfield::Height(const Math::Vec2d & pos) const
 	return Height(pos.x, pos.y);
 }
 
-Math::Vec3d Layersfield::Slope(const Math::Vec2d & pos) const
+Math::Vec3d Layersfield::Normal(unsigned i, unsigned j) const
 {
-	return Slope(pos.x, pos.y);
-}
-
-unsigned Layersfield::DrainArea(const Math::Vec2d & pos) const
-{
-	return DrainArea(pos.x, pos.y);
-}
-
-double Layersfield::Wetness(const Math::Vec2d & pos) const
-{
-	return Wetness(pos.x, pos.y);
-}
-
-double Layersfield::StreamPower(const Math::Vec2d & pos) const
-{
-	return StreamPower(pos.x, pos.y);
-}
-
-double Layersfield::Light(const Math::Vec2d & pos) const
-{
-	return Light(pos.x, pos.y);
+	return Math::Vec3d();
 }
 
 void Layersfield::AddField(const std::string& name, const Scalarfield& field)
 {
-	if (field.mScalars.size() == ny && field.mScalars[0].size() == nx)
+	if (field.mScalars.size() == mNY && field.mScalars[0].size() == mNX)
 	mFields[name] = field;
 	mNames.push_back(name);
 }
@@ -157,28 +131,28 @@ _Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
-	std::vector<Math::Vec2i> voisins;
+	std::vector<Math::Vec2u> voisins;
 	double delta_h = 0;
 	//hauteur à partir de laquelle on commence à transformer
 	double delta_h_0 = 0.01;
 	//coefficient de transformation
 	double k = 0.5;
 
-	for (int i=0; i < nx; i++)
+	for (unsigned i = 0; i < mNX; i++)
 	{
-		for (int j=0; j < ny; j++)
+		for (unsigned j = 0; j < mNY; j++)
 		{
 			voisins = _Voisin4(i,j);
-			double h_bedrock = _Field(mNames[0]).GridScalar(i, j);
-			for (Math::Vec2i v : voisins)
+			double h_bedrock = _Field(mNames[0]).Scalar(i, j);
+			for (Math::Vec2u v : voisins)
 			{
 				delta_h += h_bedrock - Height(v.x, v.y);
 			}
 			if (delta_h > delta_h_0)
 			{
 				double h_transfo = k*(delta_h - delta_h_0);
-				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].GridScalar(i, j) - h_transfo;
-				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].GridScalar(i, j) + h_transfo;
+				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].Scalar(i, j) - h_transfo;
+				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].Scalar(i, j) + h_transfo;
 			}
 		}
 	}

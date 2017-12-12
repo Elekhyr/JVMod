@@ -18,9 +18,19 @@ public:
 	// Abstract methods
 	virtual double Height(const double& x, const double& y) const = 0;
 	virtual double Height(const Math::Vec2d& pos) const = 0;
+	virtual Math::Vec3d Normal(unsigned i, unsigned j) const = 0;
+	virtual Math::Vec3d Vertex(unsigned i, unsigned j) const = 0;
+	virtual double Height(unsigned i, unsigned j) const = 0;
+
 	virtual const Boxd& _Box() const = 0;
 	virtual unsigned _SizeX() const = 0;
 	virtual unsigned _SizeY() const = 0;
+	virtual unsigned _ScaleX() const = 0;
+	virtual unsigned _ScaleY() const = 0;
+
+
+	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
+	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
 
 	/**
 	 * Compute the drain area of the field
@@ -59,17 +69,5 @@ protected:
 	virtual double Wetness(const Math::Vec2u pos) const;
 	virtual double StreamPower(const Math::Vec2u pos) const;
 	virtual double Light(const Math::Vec2u pos) const;
-
-	
-	virtual Math::Vec2d Slope(int x, const int y) const = 0;
-	virtual std::pair<Scalarfield, Scalarfield> SlopeMap() const = 0;
-	
-	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
-	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
-	
-	//TODO
-	Math::Vec3d Normal(int i, int j) const;
-	Math::Vec3d Vertice(int i, int j) const;
-	virtual double Height(int i, int j) const = 0;
 
 };

@@ -21,21 +21,31 @@ public:
 
 	void AddField(const std::string& name, const Scalarfield& field);
 	const Scalarfield& _Field(const std::string& field) const;
-	const Boxd& _Box() const;
+	const Boxd& _Box() const override;
 
-	const std::vector<Math::Vec2i> _Voisin4(const int i, const int j) const;
-	const std::vector<Math::Vec2i> _Voisin8(const int i, const int j) const;
+	const std::vector<Math::Vec2u> _Voisin4(const unsigned i, const unsigned j) const;
+	const std::vector<Math::Vec2u> _Voisin8(const unsigned i, const unsigned j) const;
 
 	void Thermal(const int temp);
-	double Height(const double& x, const double& y) const;
+	double Height(const double& x, const double& y) const override;
+	double Height(const Math::Vec2d& pos) const override;
+	Math::Vec3d Normal(unsigned i, unsigned j) const override;
+	Math::Vec3d Vertex(unsigned i, unsigned j) const override;
+	double Height(unsigned i, unsigned j) const override;
+
+	unsigned _SizeX() const override;
+	unsigned _SizeY() const override;
+	unsigned _ScaleX() const override;
+	unsigned _ScaleY() const override;
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
 	std::vector<std::string> mNames;
 	Boxd mBox;
-	int nx;
-	int ny;
+	unsigned mNX;
+	unsigned mNY;
+	
 	//TODO: add construct
-	double deltax;
-	double deltay;
+	double mDX;
+	double mDY;
 };
