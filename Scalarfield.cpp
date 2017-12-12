@@ -201,6 +201,9 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		mScaleX = mBox.b.x - mBox.a.x;
 		mScaleY = mBox.b.y - mBox.a.y;
 
+		nx = mScalars[0].size();
+		ny = mScalars.size();
+		
 		stbi_image_free(image_data);
 	}
 }

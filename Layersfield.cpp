@@ -8,6 +8,7 @@ Layersfield::Layersfield(const std::string& name, const Scalarfield& field)
 	mBox = field.mBox;
 	mFields[name] = field;
 	mNames.push_back(name);
+	
 }
 
 const Boxd& Layersfield::_Box() const
@@ -170,7 +171,7 @@ void Layersfield::Thermal(const int temp)
 			double h_bedrock = _Field(mNames[0]).GridScalar(i, j);
 			for (Math::Vec2i v : voisins)
 			{
-				delta_h += h_bedrock - _HeightTotalGrid(v.x, v.y);
+				delta_h += h_bedrock - _HeightTotal(v.x, v.y);
 			}
 			if (delta_h > delta_h_0)
 			{
