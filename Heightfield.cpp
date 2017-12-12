@@ -26,50 +26,50 @@ Math::Vec2d Heightfield::Slope(const int i, const int j) const
 	{
 		if (i - 1 >= 0)
 		{
-			n.x = (mScalars[i + 1][j] - mScalars[i - 1][j]) / (2 * mScaleX / mScalars[0].size());
+			n.x = (mScalars[j][i + 1] - mScalars[j][i - 1]) / (2 * mScaleX / mScalars[0].size());
 		}
 		else
 		{
-			n.x = (mScalars[i + 1][j] - mScalars[i][j]) / (mScaleX / mScalars[0].size());
+			n.x = (mScalars[j][i + 1] - mScalars[j][i]) / (mScaleX / mScalars[0].size());
 		}
 
 		if (j + 1 < mScalars.size())
 		{
 			if (j - 1 >= 0)
-				n.y = (mScalars[i][j + 1] - mScalars[i][j - 1]) / (2 * mScaleX / mScalars.size());
+				n.y = (mScalars[j + 1][i] - mScalars[j - 1][i]) / (2 * mScaleX / mScalars.size());
 			else
-				n.y = (mScalars[i][j + 1] - mScalars[i][j]) / (mScaleX / mScalars.size());
+				n.y = (mScalars[j + 1][i] - mScalars[j][i]) / (mScaleX / mScalars.size());
 		}
 		else {
 			if (j - 1 >= 0)
-				n.y = (mScalars[i][j] - mScalars[i][j - 1]) / (mScaleX / mScalars.size());
+				n.y = (mScalars[j][i] - mScalars[j - 1][i]) / (mScaleX / mScalars.size());
 			else
-				n.y = mScalars[i][j];
+				n.y = mScalars[j][i];
 		}
 	}
 	else
 	{
 		if (i - 1 >= 0)
 		{
-			n.x = (mScalars[i][j] - mScalars[i - 1][j]) / (mScaleX / mScalars[0].size());
+			n.x = (mScalars[j][i] - mScalars[j][i - 1]) / (mScaleX / mScalars[0].size());
 		}
 		else
 		{
-			n.x = mScalars[i][j];
+			n.x = mScalars[j][i];
 		}
 
 		if (j + 1 < mScalars.size())
 		{
 			if (j - 1 >= 0)
-				n.y = (mScalars[i][j + 1] - mScalars[i][j - 1]) / (2 * mScaleX / mScalars.size());
+				n.y = (mScalars[j + 1][i] - mScalars[j - 1][i]) / (2 * mScaleX / mScalars.size());
 			else
-				n.y = (mScalars[i][j + 1] - mScalars[i][j]) / (mScaleX / mScalars.size());
+				n.y = (mScalars[j + 1][i] - mScalars[j][i]) / (mScaleX / mScalars.size());
 		}
 		else {
 			if (j - 1 >= 0)
-				n.y = (mScalars[i][j] - mScalars[i][j - 1]) / (mScaleX / mScalars.size());
+				n.y = (mScalars[j][i] - mScalars[j - 1][i]) / (mScaleX / mScalars.size());
 			else
-				n.y = mScalars[i][j];
+				n.y = mScalars[j][i];
 		}
 	}
 
@@ -98,18 +98,19 @@ std::pair<Scalarfield, Scalarfield> Heightfield::SlopeMap() const
 	double max_x = 0;
 	double max_y = 0;
 
-	for (unsigned i = 0; i < mScalars.size(); ++i)
+	for (unsigned j = 0; j < mScalars.size(); ++j)
 	{
-		for (unsigned j = 0; j < mScalars[i].size(); ++j)
+		for (unsigned i = 0; i < mScalars[i].size(); ++i)
 		{
 			auto slope = Slope(i, j);
-			x_field.mScalars[i][j] = slope.x;
-			y_field.mScalars[i][j] = slope.y;
+			x_field.mScalars[j][i] = slope.x;
+			y_field.mScalars[j][i] = slope.y;
 
 			min_x = std::min(min_x, slope.x);
 			min_y = std::min(min_y, slope.y);
 			max_x = std::max(max_x, slope.x);
 			max_y = std::max(max_y, slope.y);
+
 		}
 	}
 
@@ -118,6 +119,7 @@ std::pair<Scalarfield, Scalarfield> Heightfield::SlopeMap() const
 
 	y_field.mZMax = max_y;
 	y_field.mZMin = min_y;
+
 	return std::move(std::make_pair(std::move(x_field), std::move(y_field)));
 }
 

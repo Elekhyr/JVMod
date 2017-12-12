@@ -42,13 +42,14 @@ protected:
 
 	friend class Layersfield;
 	friend class Heightfield;
+
 	Boxd mBox;
 	double mScaleX;
 	double mScaleY;
 
 	double mZMin;
 	double mZMax;
-	std::vector<std::vector<double>> mScalars;
+	std::vector<std::vector<double>> mScalars; // [row][col], [j][i]
 
 private:
 	double BilinearInterpolation(unsigned row, unsigned col, const double& u, const double& v) const;

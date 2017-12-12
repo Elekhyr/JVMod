@@ -16,7 +16,7 @@ int main()
 
 	field.Save("saved.png");
 	auto maps = field.SlopeMap();
-	maps.first.Save("x_slope.png", Color::Yellow);
+	maps.first.Save("x_slope.png");
 	maps.second.Save("y_slope.png", Color::Yellow);
 	return 0;
 }
