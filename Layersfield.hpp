@@ -29,9 +29,10 @@ public:
 	const std::vector<Math::Vec2i> _Voisin4(const int i, const int j) const;
 	const std::vector<Math::Vec2i> _Voisin8(const int i, const int j) const;
 
-
 	void Thermal(const int temp);
 	double Height(const double& x, const double& y) const;
+	double Height(int i, int j) const;
+	Math::Vec3d Vertice(int i, int j) const;
 	Math::Vec3d Slope(const double& x, const double& y) const;
 	unsigned DrainArea(const double& x, const double& y) const;
 	double Wetness(const double& x, const double& y) const;

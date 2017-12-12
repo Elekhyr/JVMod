@@ -83,6 +83,23 @@ double Layersfield::Height(const double & x, const double & y) const
 	return 0.0;
 }
 
+double Layersfield::Height(int i, int j) const{
+	
+	double res = 0.;
+	for (auto& field : mFields){
+		res += field.second.Scalar(i, j);
+	}
+	return res;
+
+}
+
+Math::Vec3d Layersfield::Vertice(int i, int j) const
+{
+	double x = i / (double)nx + mBox.a.x;
+	double y = j / (double)ny + mBox.a.y;
+	return Math::Vec3d(x, y, Height(i,j));
+}
+
 Math::Vec3d Layersfield::Slope(const double & x, const double & y) const
 {
 	return Math::Vec3d();
