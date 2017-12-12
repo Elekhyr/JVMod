@@ -21,16 +21,28 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	// Local coordinates between [0..1]
 	double u = (x - mBox.a.x) / (mScaleX);
 	double v = (y - mBox.a.y) / (mScaleY);
-
+	
 	// Cell location within grid
 	const unsigned row = unsigned(v * mScalars.size());
 	const unsigned col = unsigned(u * mScalars[0].size());
-
+	
 	// Local coordinates within cell between [0..1]
 	v = v * mScalars.size() - row;
 	u = u * mScalars[0].size() - col;
 
 	return BilinearInterpolation(row, col, u, v);
+}
+
+double Scalarfield::Scalar(int i, int j) const
+{
+	return mScalars[j][i];
+}
+
+Math::Vec3d Scalarfield::Vertice(int i, int j) const
+{
+	double x = i / (double)mScalars[0].size() + mBox.a.x;
+	double y = j / (double)mScalars.size() + mBox.a.y;
+	return Math::Vec3d(x, y, Scalar(i, j));
 }
 
 unsigned Scalarfield::GridXIndex(const double & x) const
@@ -201,6 +213,9 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		mScaleX = mBox.b.x - mBox.a.x;
 		mScaleY = mBox.b.y - mBox.a.y;
 
+		nx = mScalars[0].size();
+		ny = mScalars.size();
+		
 		stbi_image_free(image_data);
 	}
 }

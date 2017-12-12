@@ -33,6 +33,8 @@ public:
 
 	double GridScalar(int i, int j) const;
 	double Scalar(const double& x, const double& y) const;
+	double Scalar(int i, int j) const;
+	Math::Vec3d Vertice(int i, int j) const;
 	unsigned GridXIndex(const double& x) const;
 	unsigned GridYIndex(const double& y) const;
 
@@ -42,14 +44,24 @@ protected:
 
 	friend class Layersfield;
 	friend class Heightfield;
-
+	
+	//boite englobante
 	Boxd mBox;
+	
+	//taille de la boite
 	double mScaleX;
 	double mScaleY;
 
+	//intervalle du scalaire
 	double mZMin;
 	double mZMax;
-	std::vector<std::vector<double>> mScalars; // [row][col], [j][i]
+	
+	//tableau des scalaires
+	std::vector<std::vector<double>> mScalars;
+
+	//taille d'une case
+	int nx;
+	int ny;
 
 private:
 	double BilinearInterpolation(unsigned row, unsigned col, const double& u, const double& v) const;

@@ -8,6 +8,11 @@ double Heightfield::Height(const double& x, const double& y) const
 	return Scalar(x, y);
 }
 
+double Heightfield::Height(int i, int j) const
+{
+	return Scalar(i, j);
+}
+
 double Heightfield::Height(const Math::Vec2d& pos) const
 {
 	return Scalar(pos.x, pos.y);
@@ -121,16 +126,6 @@ std::pair<Scalarfield, Scalarfield> Heightfield::SlopeMap() const
 	y_field.mZMin = min_y;
 
 	return std::move(std::make_pair(std::move(x_field), std::move(y_field)));
-}
-
-double Heightfield::HorizonSlope(const Math::Vec3d & pos, const Math::Vec2d & dir) const
-{
-	return 0.0;
-}
-
-bool Heightfield::Visible(const Math::Vec3d & pos, const Math::Vec3d & point) const
-{
-	return false;
 }
 
 Math::Vec3d Heightfield::Normal(const double x, const double y) const

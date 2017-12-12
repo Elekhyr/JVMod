@@ -22,13 +22,9 @@ public:
 	void AddField(const std::string& name, const Scalarfield& field);
 	const Scalarfield& _Field(const std::string& field) const;
 	const Boxd& _Box() const;
-	
-	const double _HeightTotal(const int indI, const int indJ) const;
-	const double _HeightTotal(const double& x, const double& y) const;
 
 	const std::vector<Math::Vec2i> _Voisin4(const int i, const int j) const;
 	const std::vector<Math::Vec2i> _Voisin8(const int i, const int j) const;
-
 
 	void Thermal(const int temp);
 	double Height(const double& x, const double& y) const;
