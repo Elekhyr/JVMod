@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <array>
+#include <limits>
 
 double Heightfield::Height(const double& x, const double& y) const
 {
@@ -10,12 +11,115 @@ double Heightfield::Height(const double& x, const double& y) const
 
 double Heightfield::Height(const Math::Vec2d& pos) const
 {
-	return Height(pos.x, pos.y);
+	return Scalar(pos.x, pos.y);
 }
 
 const Boxd & Heightfield::_Box() const
 {
 	return mBox;
+}
+
+Math::Vec2d Heightfield::Slope(const int i, const int j) const
+{
+	Math::Vec2d n;
+	
+	if (i + 1 < mScalars[0].size() && i - 1 >= 0)
+	{
+		if (i - 1 >= 0)
+		{
+			n.x = (mScalars[i + 1][j] - mScalars[i - 1][j]) / (2 * mScaleX / mScalars[0].size());
+		}
+		else
+		{
+			n.x = (mScalars[i + 1][j] - mScalars[i][j]) / (mScaleX / mScalars[0].size());
+		}
+
+		if (j + 1 < mScalars.size())
+		{
+			if (j - 1 >= 0)
+				n.y = (mScalars[i][j + 1] - mScalars[i][j - 1]) / (2 * mScaleX / mScalars.size());
+			else
+				n.y = (mScalars[i][j + 1] - mScalars[i][j]) / (mScaleX / mScalars.size());
+		}
+		else {
+			if (j - 1 >= 0)
+				n.y = (mScalars[i][j] - mScalars[i][j - 1]) / (mScaleX / mScalars.size());
+			else
+				n.y = mScalars[i][j];
+		}
+	}
+	else
+	{
+		if (i - 1 >= 0)
+		{
+			n.x = (mScalars[i][j] - mScalars[i - 1][j]) / (mScaleX / mScalars[0].size());
+		}
+		else
+		{
+			n.x = mScalars[i][j];
+		}
+
+		if (j + 1 < mScalars.size())
+		{
+			if (j - 1 >= 0)
+				n.y = (mScalars[i][j + 1] - mScalars[i][j - 1]) / (2 * mScaleX / mScalars.size());
+			else
+				n.y = (mScalars[i][j + 1] - mScalars[i][j]) / (mScaleX / mScalars.size());
+		}
+		else {
+			if (j - 1 >= 0)
+				n.y = (mScalars[i][j] - mScalars[i][j - 1]) / (mScaleX / mScalars.size());
+			else
+				n.y = mScalars[i][j];
+		}
+	}
+
+	return n;
+}
+
+std::pair<Scalarfield, Scalarfield> Heightfield::SlopeMap() const
+{
+	Scalarfield x_field;
+	Scalarfield y_field;
+
+	x_field.mBox = mBox;
+	x_field.mScaleX = mScaleX;
+	x_field.mScaleY = mScaleY;
+
+
+	y_field.mBox = mBox;
+	y_field.mScaleX = mScaleX;
+	y_field.mScaleY = mScaleY;
+
+	x_field.mScalars = std::vector<std::vector<double>>(mScalars.size(), std::vector<double>(mScalars[0].size()));
+	y_field.mScalars = std::vector<std::vector<double>>(mScalars.size(), std::vector<double>(mScalars[0].size()));
+
+	double min_x = 0;
+	double min_y = 0;
+	double max_x = 0;
+	double max_y = 0;
+
+	for (unsigned i = 0; i < mScalars.size(); ++i)
+	{
+		for (unsigned j = 0; j < mScalars[i].size(); ++j)
+		{
+			auto slope = Slope(i, j);
+			x_field.mScalars[i][j] = slope.x;
+			y_field.mScalars[i][j] = slope.y;
+
+			min_x = std::min(min_x, slope.x);
+			min_y = std::min(min_y, slope.y);
+			max_x = std::max(max_x, slope.x);
+			max_y = std::max(max_y, slope.y);
+		}
+	}
+
+	x_field.mZMax = max_x;
+	x_field.mZMin = min_x;
+
+	y_field.mZMax = max_y;
+	y_field.mZMin = min_y;
+	return std::move(std::make_pair(std::move(x_field), std::move(y_field)));
 }
 
 double Heightfield::HorizonSlope(const Math::Vec3d & pos, const Math::Vec2d & dir) const
