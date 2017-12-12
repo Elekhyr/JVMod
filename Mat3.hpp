@@ -8,9 +8,9 @@
  *  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
  */
 #pragma once
-#include "Vec3.hpp"
 #include <stdexcept>
 #include <cmath>
+#include "Vec3.hpp"
 
 namespace Math
 {

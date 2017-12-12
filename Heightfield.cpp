@@ -1,8 +1,7 @@
-﻿#include "Heightfield.hpp"
-#include <fstream>
+﻿#include <fstream>
 #include <iostream>
 #include <array>
-#include <limits>
+#include "Heightfield.hpp"
 
 double Heightfield::Height(const double& x, const double& y) const
 {

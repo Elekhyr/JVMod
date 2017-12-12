@@ -13,6 +13,7 @@
 #include "Scalarfield.hpp"
 
 class Field {
+public:
 	virtual double Height(const double& x, const double& y) const = 0;
 	virtual double Height(const Math::Vec2d& pos) const = 0;
 	virtual const Boxd& _Box() const = 0;
