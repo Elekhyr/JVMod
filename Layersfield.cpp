@@ -15,26 +15,24 @@ const Boxd& Layersfield::_Box() const
 	return mBox;
 }
 
-const Scalarfield& Layersfield::_HighestFieldGrid(const int indI, const int indJ) const
+const double Layersfield::_HeightTotal(const int indI, const int indJ) const
 {
-	int highestLayerInd = 0;
+	double height = 0;
 	for (int i = 1; i < mNames.size(); i++)
 	{
-		if (this->_Field(mNames[i]).GridScalar(indI, indJ) >= this->_Field(mNames[highestLayerInd]).GridScalar(indI,indJ))
-			highestLayerInd = i;
+		height += _Field(mNames[i]).GridScalar(indI, indJ);
 	}
-	return this->_Field(mNames[highestLayerInd]);
+	return height;
 }
 
-const Scalarfield& Layersfield::_HighestField(const double& x, const double& y) const
+const double Layersfield::_HeightTotal(const double& x, const double& y) const
 {
-	int highestLayerInd = 0;
+	double height = 0;
 	for (int i = 1; i < mNames.size(); i++)
 	{
-		if (this->_Field(mNames[i]).Scalar(x, y) >= this->_Field(mNames[highestLayerInd]).Scalar(x,y))
-			highestLayerInd = i;
+		height += _Field(mNames[i]).Scalar(x, y);
 	}
-	return this->_Field(mNames[highestLayerInd]);
+	return height;
 }
 
 const std::vector<Math::Vec2i> Layersfield::_Voisin4(const int i, const int j) const
@@ -157,4 +155,30 @@ _Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
+	std::vector<Math::Vec2i> voisins;
+	double delta_h = 0;
+	//hauteur à partir de laquelle on commence à transformer
+	double delta_h_0 = 0.01;
+	//coefficient de transformation
+	double k = 0.5;
+
+	for (int i=0; i < nx; i++)
+	{
+		for (int j=0; j < ny; j++)
+		{
+			voisins = _Voisin4(i,j);
+			double h_bedrock = _Field(mNames[0]).GridScalar(i, j);
+			for (Math::Vec2i v : voisins)
+			{
+				delta_h += h_bedrock - _HeightTotalGrid(v.x, v.y);
+			}
+			if (delta_h > delta_h_0)
+			{
+				double h_transfo = k*(delta_h - delta_h_0);
+				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].GridScalar(i, j) - h_transfo;
+				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].GridScalar(i, j) + h_transfo;
+			}
+		}
+	}
+
 }
