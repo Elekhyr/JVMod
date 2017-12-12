@@ -2,13 +2,12 @@
 #include <cmath>
 #include "Field.hpp"
 
-
 double Field::HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const{
 	
 	const Boxd b = _Box();
-	
 	Math::Vec2d actPos = Math::Vec2d(pos.x, pos.y) + dir;
-	int nbStep = 1;
+	double sizeStep = dir.Length();
+	double nbStep = sizeStep;
 	double pente = -DBL_MAX;
 	
 	while(b.IsInside(actPos)){
@@ -20,7 +19,7 @@ double Field::HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const
 		}
 		
 		actPos += dir;
-		nbStep += 1;
+		nbStep += sizeStep;
 	}
 	
 	return pente;
@@ -38,6 +37,7 @@ bool Field::Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const{
 	double pente = dir.z / dir2D.Length();
 	
 	dir2D.Normalize();
+	//TODO: Scale dir2D to be of length 1 step in the grid
 	
 	return pente > HorizonSlope(pos, dir2D);
 }

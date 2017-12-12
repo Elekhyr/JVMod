@@ -21,13 +21,11 @@ public:
 		: Scalarfield(imagePath, boudingBox, zmin, zmax)
 	{
 	}
-
+	
 	double Height(const double& x, const double& y) const override;
+	double Height(int i, int j) const override;
 	double Height(const Math::Vec2d& pos) const override;
 	const Boxd& _Box() const override;
-
-	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const override;
-	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const override;
 
 	Math::Vec3d Normal(double x, double y) const;
 	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;

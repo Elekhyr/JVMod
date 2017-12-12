@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "Vec2.hpp"
+#include "Vec3.hpp"
 #include "Box.hpp"
 
 class Field {
@@ -17,6 +18,12 @@ public:
 	virtual double Height(const Math::Vec2d& pos) const = 0;
 	virtual const Boxd& _Box() const = 0;
 	
-	virtual double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const = 0;
-	virtual bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const = 0;
+	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
+	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
+	//TODO
+	Math::Vec3f Normal(int i, int j) const;
+	Math::Vec3f Vertex(int i, int j) const;
+	virtual double Height(int i, int j) const = 0;
+	
+	
 };

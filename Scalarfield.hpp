@@ -22,6 +22,8 @@ public:
 
 	double GridScalar(int i, int j) const;
 	double Scalar(const double& x, const double& y) const;
+	double Scalar(int i, int j) const;
+	Math::Vec3d Vertice(int i, int j) const;
 	unsigned GridXIndex(const double& x) const;
 	unsigned GridYIndex(const double& y) const;
 
