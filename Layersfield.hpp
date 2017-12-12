@@ -32,18 +32,6 @@ public:
 
 	void Thermal(const int temp);
 	double Height(const double& x, const double& y) const;
-	Math::Vec3d Slope(const double& x, const double& y) const;
-	unsigned DrainArea(const double& x, const double& y) const;
-	double Wetness(const double& x, const double& y) const;
-	double StreamPower(const double& x, const double& y) const;
-	double Light(const double& x, const double& y) const;
-
-	double Height(const Math::Vec2d& pos) const;
-	Math::Vec3d Slope(const Math::Vec2d& pos) const;
-	unsigned DrainArea(const Math::Vec2d& pos) const;
-	double Wetness(const Math::Vec2d& pos) const;
-	double StreamPower(const Math::Vec2d& pos) const;
-	double Light(const Math::Vec2d& pos) const;
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
