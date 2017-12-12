@@ -27,6 +27,9 @@ public:
 	double Height(const Math::Vec2d& pos) const override;
 	const Boxd& _Box() const override;
 
+	Math::Vec2d Slope(int x, int y) const override;
+	std::pair<Scalarfield, Scalarfield> SlopeMap() const override;
+
 	Math::Vec3d Normal(double x, double y) const;
 	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;
 };

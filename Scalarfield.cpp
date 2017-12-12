@@ -13,7 +13,7 @@ const Boxd& Scalarfield::_Box() const
 
 double Scalarfield::GridScalar(const int i, const int j) const
 {
-	return mScalars[i][j];
+	return mScalars[j][i];
 }
 
 double Scalarfield::Scalar(const double& x, const double& y) const
@@ -28,8 +28,8 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	
 	// Local coordinates within cell between [0..1]
 	v = v * mScalars.size() - row;
-	u = u * mScalars.size() - col;
-	
+	u = u * mScalars[0].size() - col;
+
 	return BilinearInterpolation(row, col, u, v);
 }
 
@@ -123,23 +123,59 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 	}
 }
 
-void Scalarfield::Save(const std::string& path)
+void Scalarfield::Save(const std::string& path, const Color& color)
 {
-	unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size()];
-	unsigned n = 0;
-
-	for (unsigned i = 0; i < mScalars.size(); ++i)
+	if (color == Color::Gray)
 	{
-		for (unsigned j = 0; j < mScalars[i].size(); ++j)
+		unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size()];
+		unsigned n = 0;
+
+		for (unsigned i = 0; i < mScalars.size(); ++i)
 		{
-			data[n] = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
-			++n;
+			for (unsigned j = 0; j < mScalars[i].size(); ++j)
+			{
+				data[n] = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
+				++n;
+			}
 		}
+
+		stbi_write_png(path.c_str(), int(mScalars.size()), int(mScalars[0].size()), 1, data, int(mScalars.size()));
+
+		delete[] data;
 	}
-	
-	stbi_write_png(path.c_str(), int(mScalars.size()), int(mScalars[0].size()), 1, data, int(mScalars.size()));
-	
-	delete[] data;
+	else
+	{
+		unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size() * 3];
+		unsigned n = 0;
+
+		for (unsigned i = 0; i < mScalars.size(); ++i)
+		{
+			for (unsigned j = 0; j < mScalars[i].size(); ++j)
+			{
+				unsigned r = 0;
+				unsigned g = 0;
+				unsigned b = 0;
+
+				unsigned result = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
+				
+				if (color == Color::Red || color == Color::Purple || color == Color::Yellow)
+					r = result;
+				data[n++] = r;
+				
+				if (color == Color::Green || color == Color::Yellow || color == Color::Cyan)
+					g = result;
+				data[n++] = g;
+
+				if (color == Color::Blue || color == Color::Purple || color == Color::Cyan)
+					b = result;
+				data[n++] = b;
+			}
+		}
+
+		stbi_write_jpg(path.c_str(), int(mScalars.size()), int(mScalars[0].size()), 3, data, 100);
+
+		delete[] data;
+	}
 }
 
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)
@@ -150,26 +186,35 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 	mBox = boudingBox;
 	
 	int img_width, img_height, nb_channels;
-	unsigned char* image_data = stbi_load(imagePath.c_str(), &img_width, &img_height, &nb_channels, STBI_grey);
-	
-	mScalars = std::vector<std::vector<double>>(img_height, std::vector<double>(img_width));
-
-	const unsigned size = img_width * img_height;
-	unsigned row = 0;
-	unsigned col = 0;
-	for (unsigned n = 0; n < size; ++n, ++col)
+	unsigned char* image_data = stbi_load(imagePath.c_str(), &img_width, &img_height, &nb_channels, STBI_rgb);
+	if (image_data != nullptr)
 	{
-		if (col == img_width)
-		{
-			col = 0;
-			++row;
-		}
-		mScalars[row][col] = zmin + (zmax-zmin) * image_data[n] / 255;
-	}
-	mScaleX = mBox.b.x - mBox.a.x;
-	mScaleY = mBox.b.y - mBox.a.y;
+		mScalars = std::vector<std::vector<double>>(img_height, std::vector<double>(img_width));
 
-	stbi_image_free(image_data);
+		const unsigned size = img_width * img_height * nb_channels;
+		unsigned row = 0;
+		unsigned col = 0;
+		for (unsigned n = 0; n < size; n += nb_channels, ++col)
+		{
+			if (col == img_width)
+			{
+				col = 0;
+				++row;
+			}
+			for (int c = 0; c < nb_channels; ++c)
+			{
+				if (image_data[n + c] != 0)
+				{
+					mScalars[row][col] = zmin + (zmax - zmin) * image_data[n + c] / 255;
+					break;
+				}
+			}
+		}
+		mScaleX = mBox.b.x - mBox.a.x;
+		mScaleY = mBox.b.y - mBox.a.y;
+
+		stbi_image_free(image_data);
+	}
 }
 
 double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col, const double& u, const double& v) const 

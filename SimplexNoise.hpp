@@ -49,4 +49,5 @@ private:
 	{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }
 	};
 
+	//integer : attention au 0 !
 }
