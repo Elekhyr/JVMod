@@ -13,7 +13,7 @@ const Boxd& Scalarfield::_Box() const
 
 double Scalarfield::GridScalar(const int i, const int j) const
 {
-	return mScalars[i][j];
+	return mScalars[j][i];
 }
 
 double Scalarfield::Scalar(const double& x, const double& y) const
