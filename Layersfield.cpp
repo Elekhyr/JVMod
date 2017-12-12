@@ -16,26 +16,6 @@ const Boxd& Layersfield::_Box() const
 	return mBox;
 }
 
-const double Layersfield::_HeightTotal(const int indI, const int indJ) const
-{
-	double height = 0;
-	for (int i = 1; i < mNames.size(); i++)
-	{
-		height += _Field(mNames[i]).GridScalar(indI, indJ);
-	}
-	return height;
-}
-
-const double Layersfield::_HeightTotal(const double& x, const double& y) const
-{
-	double height = 0;
-	for (int i = 1; i < mNames.size(); i++)
-	{
-		height += _Field(mNames[i]).Scalar(x, y);
-	}
-	return height;
-}
-
 const std::vector<Math::Vec2i> Layersfield::_Voisin4(const int i, const int j) const
 {
 	std::vector<Math::Vec2i> voisins;
@@ -80,7 +60,11 @@ const std::vector<Math::Vec2i> Layersfield::_Voisin8(const int i, const int j) c
 
 double Layersfield::Height(const double & x, const double & y) const
 {
-	return 0.0;
+	double height = 0;
+	for (auto& field : mFields) {
+		height += field.second.Scalar(x, y);
+	}
+	return height;
 }
 
 double Layersfield::Height(int i, int j) const{
@@ -188,7 +172,7 @@ void Layersfield::Thermal(const int temp)
 			double h_bedrock = _Field(mNames[0]).GridScalar(i, j);
 			for (Math::Vec2i v : voisins)
 			{
-				delta_h += h_bedrock - _HeightTotal(v.x, v.y);
+				delta_h += h_bedrock - Height(v.x, v.y);
 			}
 			if (delta_h > delta_h_0)
 			{
