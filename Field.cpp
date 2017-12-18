@@ -2,6 +2,124 @@
 #include <cmath>
 #include "Field.hpp"
 
+Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c){
+	
+	return Math::Normalize(Math::Cross(b - a, c - a));
+	
+}
+
+Math::Vec3d Field::NormalCell(unsigned i, unsigned j) const{
+	
+	Math::Vec3d ret(0., 0., 1.);
+	
+	if (i == 0){
+		if (j == 0){
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i+1, j), Vertex(i, j+1));
+		} else if (j == _SizeY() - 1) {
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i+1, j-1), Vertex(i+1, j))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i, j-1), Vertex(i+1, j-1));
+		} else {
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i, j-1), Vertex(i+1, j-1))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i+1, j-1), Vertex(i+1, j))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i+1, j), Vertex(i, j+1));
+		}
+	} else if (i == _SizeX()-1){
+		if (j == 0){
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i, j+1), Vertex(i-1, j+1))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i-1, j+1), Vertex(i-1, j));
+		} else if (j == _SizeY() - 1) {
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i-1, j), Vertex(i, j-1));
+		} else {
+			ret = getTriangleNormal(Vertex(i, j), Vertex(i, j+1), Vertex(i-1, j+1))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i-1, j+1), Vertex(i-1, j))
+			+ getTriangleNormal(Vertex(i, j), Vertex(i-1, j), Vertex(i, j-1));
+		}
+	} else if (j == 0){
+		ret = getTriangleNormal(Vertex(i, j), Vertex(i-1, j+1), Vertex(i-1, j))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i, j+1), Vertex(i-1, j+1))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i+1, j), Vertex(i, j+1));
+	} else if (j == _SizeY()-1){
+		ret = getTriangleNormal(Vertex(i, j), Vertex(i+1, j-1), Vertex(i+1, j))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i, j-1), Vertex(i+1, j-1))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i-1, j), Vertex(i, j-1));
+	} else {
+		ret = getTriangleNormal(Vertex(i, j), Vertex(i-1, j+1), Vertex(i-1, j))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i, j+1), Vertex(i-1, j+1))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i+1, j), Vertex(i, j+1))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i+1, j-1), Vertex(i+1, j))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i, j-1), Vertex(i+1, j-1))
+		+ getTriangleNormal(Vertex(i, j), Vertex(i-1, j), Vertex(i, j-1));
+	}
+	
+	return Math::Normalize(ret);
+}
+
+
+Math::Vec3d Field::Normal(double x, double y) const
+{
+	double u = (x - _Box().a.x) / (_ScaleX());
+	double v = (y - _Box().a.y) / (_ScaleY());
+	
+	if (u > 1. || u < 0. || v > 1. || u < 1.)
+		return Math::Vec3d(0., 0., 1.);
+	
+	// Cell location within grid
+	double globalv = v * (_SizeY()-1);
+	double globalu = u * (_SizeX()-1);
+	const unsigned row = unsigned(globalv);
+	const unsigned col = unsigned(globalu);
+	
+	// Local coordinates within cell between [0..1]
+	v = globalv - row;
+	u = globalu - col;
+	
+	
+	Math::Vec3d result;
+	// Interpolation with the bottom and left cells
+	if (u + v < 1) {
+		Math::Vec3d n00 = NormalCell(col, row);
+		result = n00;
+		if (row + 1 < _SizeY()) {
+			Math::Vec3d n01 = NormalCell(col, row+1);
+			result -= v * n00;
+			result += v * n01;
+		}
+		
+		if (col + 1 < _SizeX()) {
+		Math::Vec3d n10 = NormalCell(col+1, row);
+			result -= u * n00;
+			result += u * n10;
+		}
+	}
+	else {
+		Math::Vec3d n11(0.,0.,0.);
+		if (col+1 < _SizeX() && row+1 < _SizeY())
+			n11 = NormalCell(col, row);
+		result = n11;
+		if (row + 1 < _SizeY()) {
+			Math::Vec3d n01 = NormalCell(col, row+1);
+			result -= (1.-v) * n11;
+			result += (1.-v) * n01;
+		}
+		
+		if (col + 1 < _SizeX()) {
+			Math::Vec3d n10 = NormalCell(col+1, row);
+			result -= (1.-u) * n11;
+			result += (1.-u) * n10;
+		}
+	}
+	return result;
+}
+
+Math::Vec3d Field::Vertex(unsigned i, unsigned j) const{
+	double x = i * _ScaleX() / (double)_SizeX() + _Box().a.x;
+	double y = j * _ScaleY() / (double)_SizeY() + _Box().a.y;
+	return Math::Vec3d(x, y, Height(i,j));
+}
+
+Math::Vec3d Field::Vertex(double x, double y) const{
+	return Math::Vec3d(x, y, Height(x,y));
+}
 
 Scalarfield Field::DrainArea() const
 {
@@ -204,6 +322,7 @@ double Field::HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const
 }
 
 bool Field::Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const{
+	//TODO: décaler vers el haut et s'arrêter si point avant fin HF
 	if (pos.z < Height(pos.x, pos.y))
 		return false;
 	Math::Vec3d dir = point - pos;

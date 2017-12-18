@@ -17,13 +17,18 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	double u = (x - mBox.a.x) / (mScaleX);
 	double v = (y - mBox.a.y) / (mScaleY);
 	
+	if (u > 1. || u < 0. || v > 1. || u < 1.)
+		return 0.;
+	
 	// Cell location within grid
-	const unsigned row = unsigned(v * mScalars.size());
-	const unsigned col = unsigned(u * mScalars[0].size());
+	double globalv = v * (mNY-1);
+	double globalu = u * (mNX-1);
+	const unsigned row = unsigned(globalv);
+	const unsigned col = unsigned(globalu);
 	
 	// Local coordinates within cell between [0..1]
-	v = v * mScalars.size() - row;
-	u = u * mScalars[0].size() - col;
+	v = globalv - row;
+	u = globalu - col;
 
 	return BilinearInterpolation(row, col, u, v);
 }
@@ -200,7 +205,7 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 			{
 				if (image_data[n + c] != 0)
 				{
-					mScalars[row][col] = zmin + (zmax - zmin) * image_data[n + c] / 255;
+					mScalars[img_height - row - 1][col] = zmin + (zmax - zmin) * image_data[n + c] / 255;
 					break;
 				}
 			}
@@ -217,36 +222,41 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 
 double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col, const double& u, const double& v) const 
 {
-	double result = Scalar(row, col);
-	// Interpolation with the bottom and left cells
-	if (u + v < 1)
-	{
-		if (row + 1 < mScalars.size())
-		{
-			result -= v * Scalar(row, col);
-			result += v * Scalar(row + 1, col);
+	double result;
+	
+	if (u + v < 1) {
+		double n00 = Scalar(col, row);
+		result = n00;
+		if (row + 1 < mNY) {
+			double n01 = Scalar(col, row+1);
+			result -= v * n00;
+			result += v * n01;
 		}
-
-		if (col + 1 < mScalars[0].size())
-		{
-			result -= u * Scalar(row, col);
-			result += u * Scalar(row, col + 1);
-		}
-	}
-	else // interpolation with the top and right cells
-	{
-		if (int(row) - 1 >= 0)
-		{
-			result -= v * Scalar(row, col);
-			result += v * Scalar(row - 1, col);
-		}
-
-		if (int(col) - 1 >= 0)
-		{
-			result -= u * Scalar(row, col);
-			result += u * Scalar(row, col - 1);
+		
+		if (col + 1 < mNX) {
+			double n10 = Scalar(col+1, row);
+			result -= u * n00;
+			result += u * n10;
 		}
 	}
+	else {
+		double n11 = 0.;
+		if (col+1 < mNX && row+1 < mNY)
+			n11 = Scalar(col+1, row+1);
+		result = n11;
+		if (row + 1 < mNY) {
+			double n01 = Scalar(col, row+1);
+			result -= (1.-v) * n11;
+			result += (1.-v) * n01;
+		}
+		
+		if (col + 1 < mNX) {
+			double n10 = Scalar(col+1, row);
+			result -= (1.-u) * n11;
+			result += (1.-u) * n10;
+		}
+	}
+
 
 	return result;
 }

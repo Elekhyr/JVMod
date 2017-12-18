@@ -1,10 +1,13 @@
 ﻿#include "Layersfield.hpp"
+#define STB_IMAGE_WRITE_STATIC
+#include "stb_image_write.h"
 
+#define VISIBILITY_EPSILON 0.001
 
 Layersfield::Layersfield(const std::string& name, const Scalarfield& field)
 {
-	mNX = field.mScalars[0].size();
-	mNY = field.mScalars.size();
+	mNX = (int)field.mScalars[0].size();
+	mNY = (int)field.mScalars.size();
 	mBox = field.mBox;
 	mFields[name] = field;
 	mNames.push_back(name);
@@ -18,22 +21,22 @@ const Boxd& Layersfield::_Box() const
 
 unsigned Layersfield::_SizeX() const
 {
-	return 0;
+	return mNX;
 }
 
 unsigned Layersfield::_SizeY() const
 {
-	return 0;
+	return mNY;
 }
 
-unsigned Layersfield::_ScaleX() const
+double Layersfield::_ScaleX() const
 {
-	return 0;
+	return mBox.b.x - mBox.a.x;
 }
 
-unsigned Layersfield::_ScaleY() const
+double Layersfield::_ScaleY() const
 {
-	return 0;
+	return mBox.b.y - mBox.a.y;
 }
 
 const std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const unsigned j) const
@@ -87,7 +90,7 @@ double Layersfield::Height(const double & x, const double & y) const
 	return height;
 }
 
-double Layersfield::Height(unsigned i, unsigned j) const {
+double Layersfield::HeightCell(unsigned i, unsigned j) const {
 	
 	double res = 0.;
 	for (auto& field : mFields){
@@ -96,28 +99,18 @@ double Layersfield::Height(unsigned i, unsigned j) const {
 	return res;
 }
 
-Math::Vec3d Layersfield::Vertex(unsigned i, unsigned j) const
-{
-	double x = i / (double)mNX + mBox.a.x;
-	double y = j / (double)mNY + mBox.a.y;
-	return Math::Vec3d(x, y, Height(i,j));
-}
-
 double Layersfield::Height(const Math::Vec2d & pos) const
 {
 	return Height(pos.x, pos.y);
 }
 
-Math::Vec3d Layersfield::Normal(unsigned i, unsigned j) const
+void Layersfield::AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color)
 {
-	return Math::Vec3d();
-}
-
-void Layersfield::AddField(const std::string& name, const Scalarfield& field)
-{
-	if (field.mScalars.size() == mNY && field.mScalars[0].size() == mNX)
-	mFields[name] = field;
-	mNames.push_back(name);
+	if(field.mNY == mNY && field.mNY == mNX && field._Box().a == mBox.a && field._Box().b == mBox.b){
+		mFields[name] = field;
+		mColors[name] = color;
+		mNames.push_back(name);
+	}
 }
 
 const Scalarfield& Layersfield::
@@ -158,3 +151,73 @@ void Layersfield::Thermal(const int temp)
 	}
 
 }
+
+
+
+
+void Layersfield::Save(const std::string& path, const Color& color)
+{
+		unsigned char *data = new unsigned char[mNY * mNX * 3];
+		unsigned n = 0;
+	
+	for (auto& name : mNames) {
+		auto& mScalar = mFields[name];
+		auto& mColor = mColors[name];
+		for (unsigned j = 0; j < mNY; ++j)
+		{
+			for (unsigned i = 0; i < mNX; ++i)
+			{
+				if (mScalar.Scalar(i, j) < VISIBILITY_EPSILON){
+					data[n++] = (unsigned char)(mColor.x * 255.);
+					
+					data[n++] = (unsigned char)(mColor.y * 255.);
+					
+					data[n++] = (unsigned char)(mColor.z * 255.);
+				}
+			}
+		}
+	}
+	
+		stbi_write_jpg(path.c_str(), int(mNY), int(mNX), 3, data, 100);
+		
+		delete[] data;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
