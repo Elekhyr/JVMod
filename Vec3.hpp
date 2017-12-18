@@ -112,13 +112,18 @@ namespace Math
 	double Vec3<T>::Length() const {
 		return std::sqrt(double(x)*double(x) + double(y)*double(y) + double(z) * double (z));
 	}
-
+	
 	template <typename T>
 	void Vec3<T>::Normalize() {
 		const auto length = Length();
 		x = x / length;
 		y = y / length;
 		z = z / length;
+	}
+	
+	template <typename T>
+	Vec3<T> Normalize(const Vec3<T>& v) {
+		return v / v.Length();
 	}
 
 	template <typename T>
@@ -239,11 +244,17 @@ namespace Math
 	/**
 	* Compute the dot product of two Vec3 P and Q.
 	* Also called the inner product or the scalar product.
-	*/
+	 */
 	template <typename T>
 	T Dot(const Vec3<T>& P, const Vec3<T>& Q)
 	{
 		return P.x * Q.x + P.y * Q.y + P.z * Q.z;
+	}
+	
+	template <typename T>
+	Vec3<T> Cross(const Vec3<T>& P, const Vec3<T>& Q)
+	{
+		return Vec3<T>(P.y * Q.z - P.z * Q.y, P.z * Q.x - P.x * Q.z, P.x * Q.y - P.y * Q.x);
 	}
 
 	/**

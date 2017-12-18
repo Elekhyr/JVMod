@@ -18,16 +18,19 @@ public:
 	// Abstract methods
 	virtual double Height(const double& x, const double& y) const = 0;
 	virtual double Height(const Math::Vec2d& pos) const = 0;
-	virtual Math::Vec3d Normal(unsigned i, unsigned j) const = 0;
-	virtual Math::Vec3d Vertex(unsigned i, unsigned j) const = 0;
-	virtual double Height(unsigned i, unsigned j) const = 0;
+	virtual double HeightCell(unsigned i, unsigned j) const = 0;
 
 	virtual const Boxd& _Box() const = 0;
 	virtual unsigned _SizeX() const = 0;
 	virtual unsigned _SizeY() const = 0;
-	virtual unsigned _ScaleX() const = 0;
-	virtual unsigned _ScaleY() const = 0;
-
+	virtual double _ScaleX() const = 0;
+	virtual double _ScaleY() const = 0;
+	
+	Math::Vec3d NormalCell(unsigned i, unsigned j) const;
+	Math::Vec3d Normal(double x, double y) const;
+	Math::Vec3d Vertex(unsigned i, unsigned j) const;
+	Math::Vec3d Vertex(double x, double y) const;
+	
 
 	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
 	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
@@ -60,6 +63,7 @@ public:
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual double DrainCellArea(unsigned i, unsigned j) const;
+	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, std::vector<Math::Vec2d> NeighboursSlopes, std::vector<float> NeighboursDifHeight);
 	virtual double Wetness(unsigned i, unsigned j) const;
 	virtual double StreamPower(unsigned i, unsigned j) const;
 	virtual double Light(unsigned i, unsigned j) const;
@@ -71,3 +75,5 @@ protected:
 	virtual double Light(const Math::Vec2u pos) const;
 
 };
+
+Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c);

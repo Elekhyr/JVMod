@@ -8,7 +8,7 @@ double Heightfield::Height(const double& x, const double& y) const
 	return Scalar(x, y);
 }
 
-double Heightfield::Height(unsigned i, unsigned j) const
+double Heightfield::HeightCell(unsigned i, unsigned j) const
 {
 	return Scalar(i, j);
 }
@@ -16,16 +16,6 @@ double Heightfield::Height(unsigned i, unsigned j) const
 double Heightfield::Height(const Math::Vec2d& pos) const
 {
 	return Scalar(pos.x, pos.y);
-}
-
-Math::Vec3d Heightfield::Normal(unsigned i, unsigned j) const
-{
-	return Math::Vec3d();
-}
-
-Math::Vec3d Heightfield::Vertex(unsigned i, unsigned j) const
-{
-	return Math::Vec3d();
 }
 
 const Boxd & Heightfield::_Box() const
@@ -43,12 +33,12 @@ unsigned Heightfield::_SizeY() const
 	return mScalars.size();
 }
 
-unsigned Heightfield::_ScaleX() const
+double Heightfield::_ScaleX() const
 {
 	return mScaleX;
 }
 
-unsigned Heightfield::_ScaleY() const
+double Heightfield::_ScaleY() const
 {
 	return mScaleY;
 }
@@ -93,7 +83,7 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 			unsigned j = 0;
 			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				double z = Scalar(x, y);
+				double z = Scalar(i, j);
 				file << "v " << x << " " << y << " " << z << "\n";
 				auto normal = Normal(x, y);
 				normals.push_back({normal.x, normal.y, normal.z});
@@ -114,7 +104,7 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 		file << "\n\n";
 		for (auto& n : normals)
 		{
-			file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+			//file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
 		}
 
 
