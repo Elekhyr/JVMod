@@ -21,7 +21,7 @@ public:
 		: Scalarfield(imagePath, boudingBox, zmin, zmax)
 	{
 	}
-	
+
 	virtual double Height(const double& x, const double& y) const override;
 	virtual double Height(const Math::Vec2d& pos) const override;
 	virtual Math::Vec3d Normal(unsigned i, unsigned j) const override;

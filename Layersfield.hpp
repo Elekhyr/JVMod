@@ -45,7 +45,6 @@ private:
 	unsigned mNX;
 	unsigned mNY;
 	
-	//TODO: add construct
-	double mDX;
-	double mDY;
+	double mDeltaX;
+	double mDeltaY;
 };

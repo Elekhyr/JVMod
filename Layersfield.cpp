@@ -18,12 +18,12 @@ const Boxd& Layersfield::_Box() const
 
 unsigned Layersfield::_SizeX() const
 {
-	return 0;
+	return mNX;
 }
 
 unsigned Layersfield::_SizeY() const
 {
-	return 0;
+	return mNY;
 }
 
 unsigned Layersfield::_ScaleX() const

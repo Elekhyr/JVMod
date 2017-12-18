@@ -1,10 +1,46 @@
 #include <cfloat>
 #include <cmath>
 #include "Field.hpp"
+#include <vector>
 
 Scalarfield Field::DrainArea() const
 {
-	return Scalarfield();
+	Scalarfield sf;
+	sf.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX()));
+	std::vector<Math::Vec3d> sorted_heights(_SizeX() *  _SizeY());
+	for (unsigned i = 0; i < _SizeX(); i++)
+	{
+		for (unsigned j = 0; j < _SizeY(); j++)
+		{
+			sorted_heights[i][j].x = i;
+			sorted_heights[i][j].y = j;
+			sorted_heights[i][j].z = HeightCell(i, j);
+		}
+	}
+
+	std::sort(sorted_heights.begin(), sorted_heights.end()); // todo : comaprator with z;
+
+	for (unsigned i = 0; i < sorted_heights.size(); i++)
+	{
+			std::vector<double> neighbour_coords;
+			std::vector<double> neighbour_slopes;
+			std::vector<double> neighbour_heights_diff;
+			sf.mScalars[sorted_heights[i].x][sorted_heights[i].y] = 1;
+
+			FindNeighboursFlow(sorted_heights[i].x, sorted_heights[i].y, neighbour_coords, neighbour_slopes, neighbour_heights_diff);
+			
+			double total_diff = 0;
+			for (unsigned i = 0; i < neighbour_coords.size(); i++)
+			{
+				total_diff += neighbour_heights_diff[i];
+			}
+			for (unsigned i = 0; i < neighbour_coords.size(); i++)
+			{
+				sf.mScalars[neighbour_coords[i].x][neighbour_coords[i].y] += neighbour_heights_diff[i] / total_diff;
+			}
+	}
+
+	return std::move(sf);
 }
 
 std::pair<Scalarfield, Scalarfield> Field::SlopeMap() const
@@ -71,7 +107,60 @@ Scalarfield Field::StreamPowerMap() const
 
 Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 {
-	return Math::Vec2d();
+	Math::Vec2d n;
+
+	if (i + 1 < _SizeX() && i - 1 >= 0)
+	{
+		if (i - 1 >= 0)
+		{
+			n.x = (HeightCell(j, i + 1) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
+		}
+		else
+		{
+			n.x = (HeightCell(j, i + 1) - HeightCell(j, i)) / (2 * _ScaleX() / _SizeX());
+		}
+
+		if (j + 1 < _ScaleY())
+		{
+			if (j - 1 >= 0)
+				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			else
+				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
+		}
+		else {
+			if (j - 1 >= 0)
+				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			else
+				n.y = HeightCell(j, i);
+		}
+	}
+	else
+	{
+		if (i - 1 >= 0)
+		{
+			n.x = (HeightCell(j, i) - mScalars(j, i - 1)) / (2 * _ScaleX() / _SizeX());
+		}
+		else
+		{
+			n.x = HeightCell(j, i);
+		}
+
+		if (j + 1 < _SizeY())
+		{
+			if (j - 1 >= 0)
+				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			else
+				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
+		}
+		else {
+			if (j - 1 >= 0)
+				n.y = (HeightCell(j, i) - mScalars[j - 1][i]) / (2 * _ScaleY() / _SizeY());
+			else
+				n.y = HeightCell(j, i);
+		}
+	}
+
+	return n;
 }
 
 double Field::DrainCellArea(unsigned i, unsigned j) const

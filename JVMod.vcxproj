@@ -114,6 +114,7 @@
     <ClInclude Include="AnalyticHeightField.hpp" />
     <ClInclude Include="Box.hpp" />
     <ClInclude Include="Field.hpp" />
+    <ClInclude Include="Heightfield.hpp" />
     <ClInclude Include="Mat3.hpp" />
     <ClInclude Include="Mat4.hpp" />
     <ClInclude Include="Layersfield.hpp" />
@@ -128,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="AnalyticHeightField.cpp" />
     <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Heightfield.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Layersfield.cpp" />
     <ClCompile Include="Scalarfield.cpp" />
