@@ -28,7 +28,7 @@ public:
 	
 	Math::Vec3d NormalCell(unsigned i, unsigned j) const;
 	Math::Vec3d Normal(double x, double y) const;
-	Math::Vec3d Vertex(unsigned i, unsigned j) const;
+	Math::Vec3d VertexCell(unsigned i, unsigned j) const;
 	Math::Vec3d Vertex(double x, double y) const;
 	
 
