@@ -19,7 +19,7 @@ public:
 	Layersfield() = default;
 	Layersfield(const std::string& name, const Scalarfield& field);
 
-	void AddField(const std::string& name, const Scalarfield& field);
+	void AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(1., 0., 1.));
 	const Scalarfield& _Field(const std::string& field) const;
 	const Boxd& _Box() const override;
 
@@ -29,17 +29,18 @@ public:
 	void Thermal(const int temp);
 	double Height(const double& x, const double& y) const override;
 	double Height(const Math::Vec2d& pos) const override;
-	Math::Vec3d Normal(unsigned i, unsigned j) const override;
-	Math::Vec3d Vertex(unsigned i, unsigned j) const override;
-	double Height(unsigned i, unsigned j) const override;
+	double HeightCell(unsigned i, unsigned j) const override;
 
 	unsigned _SizeX() const override;
 	unsigned _SizeY() const override;
-	unsigned _ScaleX() const override;
-	unsigned _ScaleY() const override;
+	double _ScaleX() const override;
+	double _ScaleY() const override;
+	
+	void Save(const std::string& path, const Color& color);
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
+	std::unordered_map<std::string, Math::Vec3d> mColors;
 	std::vector<std::string> mNames;
 	Boxd mBox;
 	unsigned mNX;
