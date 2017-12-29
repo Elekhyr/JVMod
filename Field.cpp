@@ -180,7 +180,16 @@ Scalarfield Field::LightMap() const
 
 Scalarfield Field::WetnessMap() const
 {
-	return Scalarfield();
+	Scalarfield DrainAreaMap = DrainArea();
+	Scalarfield SlopeMap = SlopeMap();
+	Scalarfield WetnessMap = Scalarfield();
+	for (unsigned i = 0; i < _SizeX(); i++) {
+		for (unsigned j = 0; j < _SizeY(); j++) {
+			WetnessMap.mScalars[i][j] = std::log(DrainAreaMap.Scalar(i,j)/
+											(1.+ SlopeMap.Scalar(i,j)));
+		}
+	}
+	return WetnessMap;
 }
 
 Scalarfield Field::StreamPowerMap() const
