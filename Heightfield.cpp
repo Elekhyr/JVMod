@@ -8,9 +8,14 @@ double Heightfield::Height(const double& x, const double& y) const
 	return Scalar(x, y);
 }
 
+double Heightfield::HeightCell(unsigned i, unsigned j) const
+{
+	return Scalar(i, j);
+}
+
 double Heightfield::Height(const Math::Vec2d& pos) const
 {
-	return Height(pos.x, pos.y);
+	return Scalar(pos.x, pos.y);
 }
 
 const Boxd & Heightfield::_Box() const
@@ -18,30 +23,24 @@ const Boxd & Heightfield::_Box() const
 	return mBox;
 }
 
-double Heightfield::HorizonSlope(const Math::Vec3d & pos, const Math::Vec2d & dir) const
+unsigned Heightfield::_SizeX() const
 {
-	return 0.0;
+	return mNX;
 }
 
-bool Heightfield::Visible(const Math::Vec3d & pos, const Math::Vec3d & point) const
+unsigned Heightfield::_SizeY() const
 {
-	return false;
+	return mNY;
 }
 
-Math::Vec3d Heightfield::Normal(const double x, const double y) const
+double Heightfield::_ScaleX() const
 {
-	const double epsilon_x = 1 / mScaleX;
-	const double epsilon_y = 1 / mScaleY;
+	return mBox.b.x - mBox.a.x;
+}
 
-	Math::Vec3d a(x - epsilon_x, y, Scalar(x - epsilon_x < 0 ? x : x - epsilon_x, y));
-	Math::Vec3d b(x + epsilon_x, y, Scalar(x + epsilon_x, y));
-	
-	Math::Vec3d c(x, y - epsilon_y, Scalar(x, y - epsilon_y < 0 ? y : y - epsilon_y));
-	Math::Vec3d d(x, y + epsilon_y, Scalar(x, y + epsilon_y));
-
-	auto n = ((b - a) * (d - c));
-	n.Normalize();
-	return n;
+double Heightfield::_ScaleY() const
+{
+	return mBox.b.y - mBox.a.y;
 }
 
 void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const
@@ -79,7 +78,7 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 			unsigned j = 0;
 			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				double z = Scalar(x, y);
+				double z = Scalar(i, j);
 				file << "v " << x << " " << y << " " << z << "\n";
 				auto normal = Normal(x, y);
 				normals.push_back({normal.x, normal.y, normal.z});
@@ -100,7 +99,7 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 		file << "\n\n";
 		for (auto& n : normals)
 		{
-			file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+			//file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
 		}
 
 
