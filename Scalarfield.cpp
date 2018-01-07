@@ -178,6 +178,11 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 	}
 }
 
+void Scalarfield::SetScalar(const unsigned i, const unsigned j, const double value)
+{
+	mScalars[i][j] = value;
+}
+
 Scalarfield::Scalarfield(): mScaleX(0), mScaleY(0), mZMin(0), mZMax(0), mNX(0), mNY(0)
 {
 }

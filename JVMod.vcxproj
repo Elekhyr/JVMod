@@ -118,7 +118,9 @@
     <ClInclude Include="Mat3.hpp" />
     <ClInclude Include="Mat4.hpp" />
     <ClInclude Include="Layersfield.hpp" />
+    <ClInclude Include="Noise.hpp" />
     <ClInclude Include="Scalarfield.hpp" />
+    <ClInclude Include="SimplexNoise.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Transform.hpp" />
@@ -132,7 +134,9 @@
     <ClCompile Include="Heightfield.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Layersfield.cpp" />
+    <ClCompile Include="Noise.cpp" />
     <ClCompile Include="Scalarfield.cpp" />
+    <ClCompile Include="SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="heightfield.png" />
