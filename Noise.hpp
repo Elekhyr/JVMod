@@ -14,6 +14,6 @@ class Noise
 {
 public:
 	virtual ~Noise() = default;
-	virtual void Noisify(Scalarfield& field) final;
+	virtual void Noisify(Scalarfield& field, unsigned short level) final;
 	virtual double At(const Math::Vec2d& p) const = 0;
 };

@@ -210,7 +210,7 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 				col = 0;
 				++row;
 			}
-			for (int c = 0; c < nb_channels; ++c)
+			for (int c = 0; c < nb_channels && n+c < img_width * img_height; ++c)
 			{
 				if (image_data[n + c] != 0)
 				{
