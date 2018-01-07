@@ -21,10 +21,10 @@ public:
 
 	void AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(1., 0., 1.));
 	const Scalarfield& _Field(const std::string& field) const;
-	const Boxd& _Box() const override;
+	const Boxd& Box() const override;
 
-	const std::vector<Math::Vec2u> _Voisin4(const unsigned i, const unsigned j) const;
-	const std::vector<Math::Vec2u> _Voisin8(const unsigned i, const unsigned j) const;
+	std::vector<Math::Vec2u> _Voisin4(const unsigned i, const unsigned j) const;
+	std::vector<Math::Vec2u> _Voisin8(const unsigned i, const unsigned j) const;
 
 	void Thermal(const int temp);
 	double Height(const double& x, const double& y) const override;

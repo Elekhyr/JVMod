@@ -4,17 +4,16 @@
 
 #define VISIBILITY_EPSILON 0.001
 
-Layersfield::Layersfield(const std::string& name, const Scalarfield& field)
+Layersfield::Layersfield(const std::string& name, const Scalarfield& field): mDX(0), mDY(0)
 {
-	mNX = (int)field.mScalars[0].size();
-	mNY = (int)field.mScalars.size();
+	mNX = static_cast<int>(field.mScalars[0].size());
+	mNY = static_cast<int>(field.mScalars.size());
 	mBox = field.mBox;
 	mFields[name] = field;
 	mNames.push_back(name);
-	
 }
 
-const Boxd& Layersfield::_Box() const
+const Boxd& Layersfield::Box() const
 {
 	return mBox;
 }
@@ -39,7 +38,7 @@ double Layersfield::_ScaleY() const
 	return mBox.b.y - mBox.a.y;
 }
 
-const std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const unsigned j) const
+std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const unsigned j) const
 {
 	std::vector<Math::Vec2u> voisins;
 	voisins.reserve(4);
@@ -55,7 +54,7 @@ const std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const uns
 	return voisins;
 }
 
-const std::vector<Math::Vec2u> Layersfield::_Voisin8(const unsigned i, const unsigned j) const
+std::vector<Math::Vec2u> Layersfield::_Voisin8(const unsigned i, const unsigned j) const
 {
 	std::vector<Math::Vec2u> voisins;
 	voisins.reserve(8);
@@ -124,26 +123,25 @@ _Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
-	std::vector<Math::Vec2u> voisins;
 	double delta_h = 0;
 	//hauteur à partir de laquelle on commence à transformer
-	double delta_h_0 = 0.01;
+	const double delta_h_0 = 0.01;
 	//coefficient de transformation
-	double k = 0.5;
+	const double k = 0.5;
 
 	for (unsigned i = 0; i < mNX; i++)
 	{
 		for (unsigned j = 0; j < mNY; j++)
 		{
-			voisins = _Voisin4(i,j);
-			double h_bedrock = _Field(mNames[0]).Scalar(i, j);
+			std::vector<Math::Vec2u> voisins = _Voisin4(i,j);
+			const double h_bedrock = _Field(mNames[0]).Scalar(i, j);
 			for (Math::Vec2u v : voisins)
 			{
 				delta_h += h_bedrock - Height(v.x, v.y);
 			}
 			if (delta_h > delta_h_0)
 			{
-				double h_transfo = k*(delta_h - delta_h_0);
+				const double h_transfo = k*(delta_h - delta_h_0);
 				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].Scalar(i, j) - h_transfo;
 				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].Scalar(i, j) + h_transfo;
 			}
@@ -168,11 +166,11 @@ void Layersfield::Save(const std::string& path, const Color& color)
 			for (unsigned i = 0; i < mNX; ++i)
 			{
 				if (mScalar.Scalar(i, j) < VISIBILITY_EPSILON){
-					data[n++] = (unsigned char)(mColor.x * 255.);
+					data[n++] = static_cast<unsigned char>(mColor.x * 255.);
 					
-					data[n++] = (unsigned char)(mColor.y * 255.);
+					data[n++] = static_cast<unsigned char>(mColor.y * 255.);
 					
-					data[n++] = (unsigned char)(mColor.z * 255.);
+					data[n++] = static_cast<unsigned char>(mColor.z * 255.);
 				}
 			}
 		}

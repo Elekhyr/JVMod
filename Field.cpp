@@ -57,8 +57,8 @@ Math::Vec3d Field::NormalCell(unsigned i, unsigned j) const{
 
 Math::Vec3d Field::Normal(double x, double y) const
 {
-	double u = (x - _Box().a.x) / (_ScaleX());
-	double v = (y - _Box().a.y) / (_ScaleY());
+	double u = (x - Box().a.x) / (_ScaleX());
+	double v = (y - Box().a.y) / (_ScaleY());
 	
 	if (u > 1. || u < 0. || v > 1. || v < 0.)
 		return Math::Vec3d(0., 0., 1.);
@@ -112,8 +112,8 @@ Math::Vec3d Field::Normal(double x, double y) const
 }
 
 Math::Vec3d Field::VertexCell(unsigned i, unsigned j) const{
-	double x = i * _ScaleX() / (double)(_SizeX()-1) + _Box().a.x;
-	double y = j * _ScaleY() / (double)(_SizeY()-1) + _Box().a.y;
+	double x = i * _ScaleX() / (double)(_SizeX()-1) + Box().a.x;
+	double y = j * _ScaleY() / (double)(_SizeY()-1) + Box().a.y;
 	return Math::Vec3d(x, y, HeightCell(i,j));
 }
 
@@ -131,12 +131,12 @@ std::pair<Scalarfield, Scalarfield> Field::SlopeMap() const
 	Scalarfield x_field;
 	Scalarfield y_field;
 
-	x_field.mBox = _Box();
+	x_field.mBox = Box();
 	x_field.mScaleX = _ScaleX();
 	x_field.mScaleY = _ScaleY();
 
 
-	y_field.mBox = _Box();
+	y_field.mBox = Box();
 	y_field.mScaleX = _ScaleX();
 	y_field.mScaleY = _ScaleY();
 
@@ -300,7 +300,7 @@ double Field::Light(const Math::Vec2u pos) const
 
 double Field::HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const{
 	
-	const Boxd b = _Box();
+	const Boxd b = Box();
 	Math::Vec2d actPos = Math::Vec2d(pos.x, pos.y) + dir;
 	double sizeStep = dir.Length();
 	double nbStep = sizeStep;

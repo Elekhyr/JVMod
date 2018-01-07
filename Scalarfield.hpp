@@ -26,6 +26,7 @@ enum class Color
 class Scalarfield
 {
 public:
+	virtual ~Scalarfield() = default;
 	Scalarfield();
 	Scalarfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax);
 
