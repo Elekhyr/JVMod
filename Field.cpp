@@ -141,12 +141,12 @@ Scalarfield Field::DrainArea() const
 
 	for (unsigned i = 0; i < sorted_heights.size(); i++)
 	{
-			std::vector<double> neighbour_coords;
-			std::vector<double> neighbour_slopes;
+			std::vector<Math::Vec2u> neighbour_coords;
+			std::vector<Math::Vec2d> neighbour_slopes;
 			std::vector<double> neighbour_heights_diff;
 			sf.mScalars[sorted_heights[i].x][sorted_heights[i].y] = 1;
 
-			FindNeighboursFlow(sorted_heights[i].x, sorted_heights[i].y, neighbour_coords, neighbour_slopes, neighbour_heights_diff);
+			FindNeighboursFlow(unsigned(sorted_heights[i].x), unsigned(sorted_heights[i].y), neighbour_coords, neighbour_slopes, neighbour_heights_diff);
 			
 			double total_diff = 0;
 			for (unsigned i = 0; i < neighbour_coords.size(); i++)
@@ -257,7 +257,7 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 	{
 		if (i - 1 >= 0)
 		{
-			n.x = (HeightCell(j, i) - mScalars(j, i - 1)) / (2 * _ScaleX() / _SizeX());
+			n.x = (HeightCell(j, i) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
 		}
 		else
 		{
@@ -273,7 +273,7 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 		}
 		else {
 			if (j - 1 >= 0)
-				n.y = (HeightCell(j, i) - mScalars[j - 1][i]) / (2 * _ScaleY() / _SizeY());
+				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
 			else
 				n.y = HeightCell(j, i);
 		}
@@ -287,7 +287,8 @@ double Field::DrainCellArea(unsigned i, unsigned j) const
 	return 0.0;
 }
 
-void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, std::vector<Math::Vec2d> NeighboursSlopes, std::vector<float> NeighboursDifHeight)
+void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, 
+	std::vector<Math::Vec2d> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const
 {
 	if (i > 0) {
 		if (Height(i,j)-Height(i-1,j) > 0) {

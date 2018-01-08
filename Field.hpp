@@ -63,7 +63,8 @@ public:
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual double DrainCellArea(unsigned i, unsigned j) const;
-	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, std::vector<Math::Vec2d> NeighboursSlopes, std::vector<float> NeighboursDifHeight);
+	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, 
+		std::vector<Math::Vec2d> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const;
 	virtual double Wetness(unsigned i, unsigned j) const;
 	virtual double StreamPower(unsigned i, unsigned j) const;
 	virtual double Light(unsigned i, unsigned j) const;
