@@ -1,10 +1,17 @@
 #include "SimplexNoise.hpp"
 
+int SimplexNoise::Integer(const double & x)
+{
+  if (x<=0) {
+    return (int)(x) -1;
+  }
+  return (int)(x);
+}
+
 double SimplexNoise::dot(const int* g, const double& x, const double& y) const
 {
   return g[0] * x + g[1] * y;
 }
-
 
 double SimplexNoise::At(const Math::Vec2d& p) const
 {
@@ -16,8 +23,8 @@ double SimplexNoise::At(const Math::Vec2d& p) const
   const double F2 = 0.5 * (sqrt(3.0) - 1.0);
   // Hairy factor for 2D
   double s = (x + y) * F2;
-  int i = int(x + s);
-  int j = int(y + s);
+  int i = Integer(x + s);
+  int j = Integer(y + s);
   const double G2 = (3.0 - sqrt(3.0)) / 6.0;
   double t = (i + j) * G2;
   // Unskew the cell origin back to (x,y) space

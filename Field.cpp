@@ -217,49 +217,49 @@ void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> 
 		}
 	}
 	if (j > 0) {
-		if (Height(i,j)-Height(i, j-1)) {
+		if (Height(i,j)-Height(i, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i, j-1));
 			NeighboursSlopes.push_back(Slope(i, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i, j-1));
 		}
 	}
 	if (i < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j)) {
+		if (Height(i,j)-Height(i+1, j) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j));
 			NeighboursSlopes.push_back(Slope(i+1, j));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j));
 		}
 	}
 	if (j < _SizeY()) {
-		if (Height(i,j)-Height(i, j+1)) {
+		if (Height(i,j)-Height(i, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i, j+1));
 			NeighboursSlopes.push_back(Slope(i, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i,j+1));
 		}
 	}
 	if (i > 0 && j > 0) {
-		if (Height(i,j)-Height(i-1, j-1)) {
+		if (Height(i,j)-Height(i-1, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j-1));
 			NeighboursSlopes.push_back(Slope(i-1, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j-1));
 		}
 	}
 	if (i > 0 && j < _SizeY()) {
-		if (Height(i,j)-Height(i-1, j+1)) {
+		if (Height(i,j)-Height(i-1, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j+1));
 			NeighboursSlopes.push_back(Slope(i-1, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j+1));
 		}
 	}
 	if (i < _SizeX() && j > 0) {
-		if (Height(i,j)-Height(i+1, j-1)) {
+		if (Height(i,j)-Height(i+1, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j-1));
 			NeighboursSlopes.push_back(Slope(i+1, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j-1));
 		}
 	}
 	if (i < _SizeX() && j < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j+1)) {
+		if (Height(i,j)-Height(i+1, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j+1));
 			NeighboursSlopes.push_back(Slope(i+1, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j+1));

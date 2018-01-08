@@ -13,6 +13,7 @@
 class SimplexNoise
 {
 public:
+	int Integer(const double & x);
 	double At(const Math::Vec2d& p) const;
 	double dot(const int* g, const double& x, const double& y) const;
 private:
@@ -50,4 +51,5 @@ private:
 	};
 
 	//integer : attention au 0 !
+
 }
