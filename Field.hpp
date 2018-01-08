@@ -15,12 +15,13 @@
 
 class Field {
 public:
+	virtual ~Field() = default;
 	// Abstract methods
 	virtual double Height(const double& x, const double& y) const = 0;
 	virtual double Height(const Math::Vec2d& pos) const = 0;
 	virtual double HeightCell(unsigned i, unsigned j) const = 0;
 
-	virtual const Boxd& _Box() const = 0;
+	virtual const Boxd& Box() const = 0;
 	virtual unsigned _SizeX() const = 0;
 	virtual unsigned _SizeY() const = 0;
 	virtual double _ScaleX() const = 0;
@@ -63,7 +64,8 @@ public:
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual double DrainCellArea(unsigned i, unsigned j) const;
-	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, std::vector<Math::Vec2d> NeighboursSlopes, std::vector<float> NeighboursDifHeight);
+	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, 
+		std::vector<Math::Vec2d> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const;
 	virtual double Wetness(unsigned i, unsigned j) const;
 	virtual double StreamPower(unsigned i, unsigned j) const;
 	virtual double Light(unsigned i, unsigned j) const;

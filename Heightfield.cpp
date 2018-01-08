@@ -18,29 +18,24 @@ double Heightfield::Height(const Math::Vec2d& pos) const
 	return Scalar(pos.x, pos.y);
 }
 
-const Boxd & Heightfield::_Box() const
-{
-	return mBox;
-}
-
 unsigned Heightfield::_SizeX() const
 {
-	return mNX;
+	return mScalars[0].size();
 }
 
 unsigned Heightfield::_SizeY() const
 {
-	return mNY;
+	return mScalars.size();
 }
 
 double Heightfield::_ScaleX() const
 {
-	return mBox.b.x - mBox.a.x;
+	return mScaleX;
 }
 
 double Heightfield::_ScaleY() const
 {
-	return mBox.b.y - mBox.a.y;
+	return mScaleY;
 }
 
 void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const
@@ -114,4 +109,9 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 
 		file.close();
 	}
+}
+
+const Boxd& Heightfield::Box() const
+{
+	return _Box();
 }

@@ -1,6 +1,6 @@
-#include "SimplexNoise.hpp"
+﻿#include "SimplexNoise.hpp"
 
-int SimplexNoise::Integer(const double & x)
+int SimplexNoise::Integer(const double & x) const
 {
   if (x<=0) {
     return (int)(x) -1;
@@ -8,9 +8,9 @@ int SimplexNoise::Integer(const double & x)
   return (int)(x);
 }
 
-double SimplexNoise::dot(const int* g, const double& x, const double& y) const
+double dot(const int* g, const double& x, const double& y)
 {
-  return g[0] * x + g[1] * y;
+	return g[0] * x + g[1] * y;
 }
 
 double SimplexNoise::At(const Math::Vec2d& p) const

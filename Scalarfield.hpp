@@ -26,7 +26,8 @@ enum class Color
 class Scalarfield
 {
 public:
-	Scalarfield() = default;
+	virtual ~Scalarfield() = default;
+	Scalarfield();
 	Scalarfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax);
 
 	const Boxd& _Box() const;
@@ -39,9 +40,12 @@ public:
 
 	virtual void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
 	void Save(const std::string& path, const Color& color = Color::Gray);
+
+	void SetScalar(const unsigned i, const unsigned j, const double value);
 protected:
 	friend class Field;
-
+	friend class Noise;
+	friend class SimplexNoise;
 	friend class Layersfield;
 	friend class Heightfield;
 	
