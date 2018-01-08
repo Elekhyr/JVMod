@@ -1,7 +1,8 @@
 ﻿#include "Noise.hpp"
-
-void Noise::Noisify(Scalarfield& field, const unsigned short level)
+#include <random>
+void Noise::Noisify(Scalarfield& field, const unsigned short level, const unsigned amplitude, const unsigned length)
 {
+
 	for (unsigned i = 0; i < field.mScalars.size(); ++i)
 		for (unsigned j = 0; j < field.mScalars[i].size(); ++j)
 		{
@@ -9,11 +10,14 @@ void Noise::Noisify(Scalarfield& field, const unsigned short level)
 			const double y = j / static_cast<double>(field.mScalars.size()) + field.mBox.a.y;
 			
 			double elevation = 0;
-			double freq = 1;
-			for (unsigned n = 1; n <= level; ++n)
+			double r = dis(gen);
+			for (unsigned n = 0; n < level; ++n)
 			{
-				elevation += (1 / n) * At(Math::Vec2d(freq * x, freq * y));
-				freq *= 2;
+				double pow = std::pow(2, n);
+				double a = amplitude / pow;
+				double l = length / pow;
+
+				elevation += a * level * (At(Math::Vec2d(x / l, 1.5 * y / l)) /*+ sigma*/);
 			}
 			field.mScalars[i][j] = elevation;
 		}

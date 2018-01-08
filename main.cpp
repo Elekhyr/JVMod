@@ -9,7 +9,7 @@ int main()
 	Scalarfield field("blank.jpg", box, -1, 1);
 	SimplexNoise noise;
 
-	noise.Noisify(field, 7);
+	noise.Noisify(field, 2, 1, 10);
 	field.Save("noisified.jpg");
 
 	return 0;
