@@ -21,8 +21,8 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 		return 0.;
 	
 	// Cell location within grid
-	double globalv = v * (mNY-1);
-	double globalu = u * (mNX-1);
+	const double globalv = v * (mNY-1);
+	const double globalu = u * (mNX-1);
 	const unsigned row = unsigned(globalv);
 	const unsigned col = unsigned(globalu);
 	
@@ -40,8 +40,8 @@ double Scalarfield::Scalar(unsigned i, unsigned j) const
 
 Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
 {
-	double x = i / (double)mScalars[0].size() + mBox.a.x;
-	double y = j / (double)mScalars.size() + mBox.a.y;
+	const double x = i / static_cast<double>(mScalars[0].size()) + mBox.a.x;
+	const double y = j / static_cast<double>(mScalars.size()) + mBox.a.y;
 	return Math::Vec3d(x, y, Scalar(i, j));
 }
 
@@ -50,7 +50,7 @@ unsigned Scalarfield::GridXIndex(const double & x) const
 	// Local coordinates between [0..1]
 	double u = (x - mBox.a.x) / (mScaleX);
 
-	// Cell location within gri
+	// Cell location within grid
 	const unsigned col = unsigned(u * mScalars[0].size());
 
 	return col;
@@ -59,7 +59,7 @@ unsigned Scalarfield::GridXIndex(const double & x) const
 unsigned Scalarfield::GridYIndex(const double & y) const
 {
 	// Local coordinates between [0..1]
-	double v = (y - mBox.a.y) / (mScaleY);
+	const double v = (y - mBox.a.y) / (mScaleY);
 
 	// Cell location within grid
 	const unsigned row = unsigned(v * mScalars.size());
@@ -156,7 +156,7 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 				unsigned g = 0;
 				unsigned b = 0;
 
-				unsigned result = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
+				const unsigned result = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
 				
 				if (color == Color::Red || color == Color::Purple || color == Color::Yellow)
 					r = result;
@@ -176,6 +176,15 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 
 		delete[] data;
 	}
+}
+
+void Scalarfield::SetScalar(const unsigned i, const unsigned j, const double value)
+{
+	mScalars[i][j] = value;
+}
+
+Scalarfield::Scalarfield(): mScaleX(0), mScaleY(0), mZMin(0), mZMax(0), mNX(0), mNY(0)
+{
 }
 
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)
@@ -201,7 +210,7 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 				col = 0;
 				++row;
 			}
-			for (int c = 0; c < nb_channels; ++c)
+			for (int c = 0; c < nb_channels && n+c < img_width * img_height; ++c)
 			{
 				if (image_data[n + c] != 0)
 				{
