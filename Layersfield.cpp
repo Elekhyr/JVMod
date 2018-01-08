@@ -4,7 +4,7 @@
 
 #define VISIBILITY_EPSILON 0.001
 
-Layersfield::Layersfield(const std::string& name, const Scalarfield& field): mDX(0), mDY(0)
+Layersfield::Layersfield(const std::string& name, const Scalarfield& field): mDeltaX(0), mDeltaY(0)
 {
 	mNX = static_cast<int>(field.mScalars[0].size());
 	mNY = static_cast<int>(field.mScalars.size());

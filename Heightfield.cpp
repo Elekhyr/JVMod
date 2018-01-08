@@ -38,11 +38,6 @@ double Heightfield::_ScaleY() const
 	return mScaleY;
 }
 
-Math::Vec3d Heightfield::Normal(double x, double y) const
-{
-	return Math::Vec3d();
-}
-
 void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const
 {
 	std::vector<std::array<unsigned, 3>> faces;

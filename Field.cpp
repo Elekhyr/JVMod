@@ -2,6 +2,7 @@
 #include <cmath>
 #include "Field.hpp"
 #include <vector>
+#include "Vec3.hpp"
 
 Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c){
 	
@@ -131,16 +132,16 @@ Scalarfield Field::DrainArea() const
 	{
 		for (unsigned j = 0; j < _SizeY(); j++)
 		{
-			sorted_heights[i][j].x = i;
-			sorted_heights[i][j].y = j;
-			sorted_heights[i][j].z = HeightCell(i, j);
+			/*sorted_heights[i][j].x = double(i);
+			sorted_heights[i][j].y = double(j);
+			sorted_heights[i][j].z = double(HeightCell(i, j));*/
 		}
 	}
 
-	std::sort(sorted_heights.begin(), sorted_heights.end()); // todo : comaprator with z;
+	//std::sort(sorted_heights.begin(), sorted_heights.end()); // todo : comaprator with z;
 
 	for (unsigned i = 0; i < sorted_heights.size(); i++)
-	{
+	{/*
 			std::vector<Math::Vec2u> neighbour_coords;
 			std::vector<Math::Vec2d> neighbour_slopes;
 			std::vector<double> neighbour_heights_diff;
@@ -156,7 +157,7 @@ Scalarfield Field::DrainArea() const
 			for (unsigned i = 0; i < neighbour_coords.size(); i++)
 			{
 				sf.mScalars[neighbour_coords[i].x][neighbour_coords[i].y] += neighbour_heights_diff[i] / total_diff;
-			}
+			}*/
 	}
 
 	return std::move(sf);
