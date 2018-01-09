@@ -16,7 +16,7 @@ AnalyticHeightField::AnalyticHeightField(const Boxd& boudingBox, const double am
 	mLevel = level;
 }
 
-double AnalyticHeightField::SimplexNoiseAt(const Math::Vec2<double> v)
+double AnalyticHeightField::SimplexNoiseAt(const Math::Vec2<double> v) const
 {
 	SimplexNoise noise = SimplexNoise();
 	double elevation = 0;
