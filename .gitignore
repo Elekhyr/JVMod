@@ -264,3 +264,5 @@ __pycache__/
 .vscode/
 Build/
 CMakeLists.txt
+/blank.jpg
+/noisified.jpg
