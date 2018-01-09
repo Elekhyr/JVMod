@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <type_traits>
 #include "Vec3.hpp"
+#include "Vec2.hpp"
 
 template <class T>
 struct Box

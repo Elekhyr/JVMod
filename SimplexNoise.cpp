@@ -2,7 +2,7 @@
 
 int SimplexNoise::Integer(const double & x) const
 {
-  if (x<=0) {
+  if (x<0) {
     return (int)(x) -1;
   }
   return (int)(x);

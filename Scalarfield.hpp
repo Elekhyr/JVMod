@@ -11,6 +11,7 @@
 #include <vector>
 #include "Vec2.hpp"
 #include "Box.hpp"
+#include "AnalyticHeightField.hpp"
 
 enum class Color
 {
@@ -42,6 +43,9 @@ public:
 	void Save(const std::string& path, const Color& color = Color::Gray);
 
 	void SetScalar(const unsigned i, const unsigned j, const double value);
+
+	void ScalarFromNoise(AnalyticHeightField& analyticHeightField);
+
 protected:
 	friend class Field;
 	friend class Noise;

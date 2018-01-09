@@ -229,6 +229,20 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 	}
 }
 
+void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
+{
+	for (unsigned i = 0; i < mNY; ++i)
+	{
+		for (unsigned j = 0; j < mNX; ++j)
+		{
+			const double x = i / static_cast<double>(mNX) + mBox.a.x;
+			const double y = j / static_cast<double>(mNY) + mBox.a.y;
+			mScalars[i][j] = analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y));
+		}
+	}
+}
+
+
 double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col, const double& u, const double& v) const 
 {
 	double result;

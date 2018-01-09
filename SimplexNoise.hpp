@@ -1,12 +1,10 @@
 ﻿#pragma once
-#include "Noise.hpp"
-
+#include "Vec2.hpp"
 class SimplexNoise
-	: public Noise
 {
 public:
 	int Integer(const double & x) const;
-	double At(const Math::Vec2d& p) const override;
+	double At(const Math::Vec2d& p) const;
 	
 private:
 	const int perm[512] = {
