@@ -4,6 +4,11 @@
 
 #define VISIBILITY_EPSILON 0.001
 
+Layersfield::Layersfield(unsigned nx, unsigned ny, Boxd box)
+	: mNX(nx), mNY(ny), mBox(box)
+{
+}
+
 Layersfield::Layersfield(const std::string& name, const Scalarfield& field): mDeltaX(0), mDeltaY(0)
 {
 	mNX = static_cast<int>(field.mScalars[0].size());
@@ -112,8 +117,7 @@ void Layersfield::AddField(const std::string& name, const Scalarfield& field, co
 	}
 }
 
-const Scalarfield& Layersfield::
-_Field(const std::string& field) const
+const Scalarfield& Layersfield::_Field(const std::string& field) const
 {
 	const auto it = mFields.find(field);
 	if (it == mFields.end())
@@ -151,29 +155,31 @@ void Layersfield::Thermal(const int temp)
 }
 
 
-
-
 void Layersfield::Save(const std::string& path, const Color& color)
 {
-		unsigned char *data = new unsigned char[mNY * mNX * 3];
-		unsigned n = 0;
-	
+	unsigned char *data = new unsigned char[mNY * mNX * 3];
+
+	std::string* p_str = &mNames[0];
 	for (auto& name : mNames) {
+		unsigned n = 0;
 		auto& mScalar = mFields[name];
 		auto& mColor = mColors[name];
+
 		for (unsigned j = 0; j < mNY; ++j)
 		{
 			for (unsigned i = 0; i < mNX; ++i)
 			{
-				if (mScalar.Scalar(i, j) < VISIBILITY_EPSILON){
-					data[n++] = static_cast<unsigned char>(mColor.x * 255.);
-					
-					data[n++] = static_cast<unsigned char>(mColor.y * 255.);
-					
-					data[n++] = static_cast<unsigned char>(mColor.z * 255.);
+				if (mScalar.Scalar(i, j) != 0)
+				{
+					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
 				}
+				else
+					n += 3;
 			}
 		}
+		p_str = &name;
 	}
 	
 		stbi_write_jpg(path.c_str(), int(mNY), int(mNX), 3, data, 100);

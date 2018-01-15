@@ -10,7 +10,6 @@ void Noise::Noisify(Scalarfield& field, const unsigned short level, const unsign
 			const double y = j / static_cast<double>(field.mScalars.size()) + field.mBox.a.y;
 			
 			double elevation = 0;
-			double r = dis(gen);
 			for (unsigned n = 0; n < level; ++n)
 			{
 				double pow = std::pow(2, n);

@@ -196,6 +196,9 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 	
 	int img_width, img_height, nb_channels;
 	unsigned char* image_data = stbi_load(imagePath.c_str(), &img_width, &img_height, &nb_channels, STBI_rgb);
+	if (nb_channels == 4)
+		nb_channels--;
+
 	if (image_data != nullptr)
 	{
 		mScalars = std::vector<std::vector<double>>(img_height, std::vector<double>(img_width));
@@ -210,7 +213,7 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 				col = 0;
 				++row;
 			}
-			for (int c = 0; c < nb_channels && n+c < img_width * img_height; ++c)
+			for (int c = 0; c < nb_channels ; ++c)
 			{
 				if (image_data[n + c] != 0)
 				{
