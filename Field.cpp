@@ -227,6 +227,7 @@ Scalarfield Field::WetnessMap() const
 	// 	}
 	// }
 	// return WetnessMap;
+	return {};
 }
 
 Scalarfield Field::StreamPowerMap() const

@@ -1,6 +1,8 @@
 #include "Heightfield.hpp"
 #include "SimplexNoise.hpp"
 #include "AnalyticHeightField.hpp"
+#include "Layersfield.hpp"
+
 int main()
 {
 	Boxd box;
@@ -8,7 +10,7 @@ int main()
 	box.b = Math::Vec2d(1000, 1000);
 	
 	Scalarfield field("blank.jpg", box, -1, 1);
-	AnalyticHeightField ahf = AnalyticHeightField(box, 1000., 5000., 2);
+	AnalyticHeightField ahf = AnalyticHeightField(box, 1, 3, 7);
 
 	field.ScalarFromNoise(ahf);
 	field.Save("noisified.jpg");
