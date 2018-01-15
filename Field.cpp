@@ -217,7 +217,17 @@ Scalarfield Field::LightMap() const
 
 Scalarfield Field::WetnessMap() const
 {
-	return Scalarfield();
+	// Scalarfield DrainAreaMap = DrainArea();
+	// Scalarfield SlopeMap = SlopeMap();
+	// Scalarfield WetnessMap = Scalarfield();
+	// for (unsigned i = 0; i < _SizeX(); i++) {
+	// 	for (unsigned j = 0; j < _SizeY(); j++) {
+	// 		WetnessMap.mScalars[i][j] = std::log(DrainAreaMap.Scalar(i,j)/
+	// 										(1.+ SlopeMap.Scalar(i,j)));
+	// 	}
+	// }
+	// return WetnessMap;
+	return {};
 }
 
 Scalarfield Field::StreamPowerMap() const
@@ -299,49 +309,49 @@ void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> 
 		}
 	}
 	if (j > 0) {
-		if (Height(i,j)-Height(i, j-1)) {
+		if (Height(i,j)-Height(i, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i, j-1));
 			NeighboursSlopes.push_back(Slope(i, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i, j-1));
 		}
 	}
 	if (i < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j)) {
+		if (Height(i,j)-Height(i+1, j) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j));
 			NeighboursSlopes.push_back(Slope(i+1, j));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j));
 		}
 	}
 	if (j < _SizeY()) {
-		if (Height(i,j)-Height(i, j+1)) {
+		if (Height(i,j)-Height(i, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i, j+1));
 			NeighboursSlopes.push_back(Slope(i, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i,j+1));
 		}
 	}
 	if (i > 0 && j > 0) {
-		if (Height(i,j)-Height(i-1, j-1)) {
+		if (Height(i,j)-Height(i-1, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j-1));
 			NeighboursSlopes.push_back(Slope(i-1, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j-1));
 		}
 	}
 	if (i > 0 && j < _SizeY()) {
-		if (Height(i,j)-Height(i-1, j+1)) {
+		if (Height(i,j)-Height(i-1, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j+1));
 			NeighboursSlopes.push_back(Slope(i-1, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j+1));
 		}
 	}
 	if (i < _SizeX() && j > 0) {
-		if (Height(i,j)-Height(i+1, j-1)) {
+		if (Height(i,j)-Height(i+1, j-1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j-1));
 			NeighboursSlopes.push_back(Slope(i+1, j-1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j-1));
 		}
 	}
 	if (i < _SizeX() && j < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j+1)) {
+		if (Height(i,j)-Height(i+1, j+1) > 0) {
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j+1));
 			NeighboursSlopes.push_back(Slope(i+1, j+1));
 			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j+1));

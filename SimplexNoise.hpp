@@ -1,20 +1,11 @@
-﻿/**
-* \file SimplexNoise.hpp
-* \brief todo
-* \author Elekhyr
-* \version 1.0
-* \date 07/01/18
-* \copyright Copyright (c) 2017 Thomas Margier
-*  This file is licensed under the MIT License, see https://opensource.org/licenses/MIT
-*/
-#pragma once
-#include "Noise.hpp"
-
+﻿#pragma once
+#include "Vec2.hpp"
 class SimplexNoise
-	: public Noise
 {
 public:
-	double At(const Math::Vec2d& p) const override;
+	int Integer(const double & x) const;
+	double At(const Math::Vec2d& p) const;
+	
 private:
 	const int perm[512] = {
 		151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142,
