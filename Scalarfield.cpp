@@ -232,6 +232,23 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 	}
 }
 
+Scalarfield::Scalarfield(const Boxd& boudingBox, double zmin, double zmax, double nbX, double nbY)
+{
+//Constructeur d'un scalarfield avec des scalars à 0
+	mZMin = zmin;
+	mZMax = zmax;
+	mBox = boudingBox;
+	mScaleX = mBox.b.x - mBox.a.x;
+	mScaleY = mBox.b.y - mBox.a.y;
+	mNX = nbX;
+	mNY = nbY;
+	for (int j = 0; j < nbY; j++) {
+		for (int i = 0; i < nbX; i++) {
+			mScalars[j][i] = 0.;
+		}
+	}
+}
+
 void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
 {
 	for (unsigned i = 0; i < mNY; ++i)

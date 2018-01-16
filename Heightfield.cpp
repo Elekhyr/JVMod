@@ -94,7 +94,7 @@ void Heightfield::ExportToObj(const std::string & path, unsigned nbPointsX, unsi
 		file << "\n\n";
 		for (auto& n : normals)
 		{
-			//file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+			file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
 		}
 
 

@@ -9,12 +9,13 @@ Layersfield::Layersfield(unsigned nx, unsigned ny, Boxd box)
 {
 }
 
-Layersfield::Layersfield(const std::string& name, const Scalarfield& field): mDeltaX(0), mDeltaY(0)
+Layersfield::Layersfield(const std::string& name, const Scalarfield& field, const Math::Vec3d& color): mDeltaX(0), mDeltaY(0)
 {
 	mNX = static_cast<int>(field.mScalars[0].size());
 	mNY = static_cast<int>(field.mScalars.size());
 	mBox = field.mBox;
 	mFields[name] = field;
+	mColors[name]= color;
 	mNames.push_back(name);
 }
 
@@ -110,11 +111,17 @@ double Layersfield::Height(const Math::Vec2d & pos) const
 
 void Layersfield::AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color)
 {
-	if(field.mNY == mNY && field.mNY == mNX && field._Box().a == mBox.a && field._Box().b == mBox.b){
+	if(field.mNY == mNY && field.mNX == mNX && field._Box().a == mBox.a && field._Box().b == mBox.b){
 		mFields[name] = field;
 		mColors[name] = color;
 		mNames.push_back(name);
 	}
+}
+
+void Layersfield::AddEmptyField(const std::string& name, const Math::Vec3d& color)
+{
+	Scalarfield sf = Scalarfield(Box(), 0., 100.,mNX,mNY);
+	AddField(name, sf, color);
 }
 
 const Scalarfield& Layersfield::_Field(const std::string& field) const
@@ -155,7 +162,7 @@ void Layersfield::Thermal(const int temp)
 }
 
 
-void Layersfield::Save(const std::string& path, const Color& color)
+void Layersfield::Save(const std::string& path)
 {
 	unsigned char *data = new unsigned char[mNY * mNX * 3];
 
@@ -186,42 +193,3 @@ void Layersfield::Save(const std::string& path, const Color& color)
 		
 		delete[] data;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

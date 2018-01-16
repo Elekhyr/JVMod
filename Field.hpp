@@ -61,6 +61,8 @@ public:
 	 */
 	virtual Scalarfield StreamPowerMap() const;
 
+	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
+
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual double DrainCellArea(unsigned i, unsigned j) const;
