@@ -9,7 +9,7 @@ int main()
 	box.a = Math::Vec2d(0, 0);
 	box.b = Math::Vec2d(1000, 1000);
 	
-	Scalarfield field("blank.jpg", box, 0, 255);
+	Scalarfield field("blank.jpg", box, 0, 500);
 	AnalyticHeightField ahf = AnalyticHeightField(box, 1, 3, 3);
 
 	field.ScalarFromNoise(ahf);

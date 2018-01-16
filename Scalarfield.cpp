@@ -72,6 +72,10 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 	std::vector<std::array<unsigned, 3>> faces;
 	faces.reserve(nbPointsX * nbPointsY * 2);
 
+
+	std::vector<std::array<double, 3>> normals;
+	normals.reserve(nbPointsX * nbPointsY);
+
 	unsigned n = 0;
 	unsigned i = 0;
 
@@ -98,15 +102,18 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 			unsigned j = 0;
 			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				file << "v " << x << " " << y << " " << Scalar(x, y) << "\n";
-				
+				double z = Scalar(i, j);
+				file << "v " << x << " " << y << " " << z << "\n";
+				auto normal = Math::Vec3d();// Normal(x, y);
+				normals.push_back({ normal.x, normal.y, normal.z });
+
 				if (i < nbPointsX - 1 && j < nbPointsY - 1)
 				{
 					faces.push_back({ n + j + 2,
-						n + j + 1, 
-						n + j + nbPointsX + 1});
-					faces.push_back({ n + j + nbPointsX + 1, 
-						n + j + nbPointsX + 2, 
+						n + j + 1,
+						n + j + nbPointsX + 1 });
+					faces.push_back({ n + j + nbPointsX + 1,
+						n + j + nbPointsX + 2,
 						n + j + 2 });
 				}
 			}
@@ -114,9 +121,19 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 		}
 
 		file << "\n\n";
+		for (auto& n : normals)
+		{
+			//file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+		}
+
+
+		file << "\n\n";
 		for (auto& f : faces)
 		{
-			file << "f " << f[0] << " " << f[1] << " " << f[2] << " \n";
+			file << "f "
+				<< f[0] << "//" << f[0] << " "
+				<< f[1] << "//" << f[1] << " "
+				<< f[2] << "//" << f[2] << " \n";
 		}
 
 		file.close();
