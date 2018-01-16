@@ -463,9 +463,10 @@ void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned n
 	std::vector<std::array<unsigned, 3>> faces;
 	faces.reserve(nbPointsX * nbPointsY * 2);
 
+
 	std::vector<std::array<double, 3>> normals;
 	normals.reserve(nbPointsX * nbPointsY);
-	
+
 	unsigned n = 0;
 	unsigned i = 0;
 
@@ -492,10 +493,10 @@ void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned n
 			unsigned j = 0;
 			for (double y = Box().a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				double z = HeightCell(i, j);
+				double z = Height(i, j);
 				file << "v " << x << " " << y << " " << z << "\n";
-				auto normal = Normal(x, y);
-				normals.push_back({normal.x, normal.y, normal.z});
+				const auto normal = Math::Vec3d();// Normal(x, y);
+				normals.push_back({ normal.x, normal.y, normal.z });
 
 				if (i < nbPointsX - 1 && j < nbPointsY - 1)
 				{
@@ -513,16 +514,16 @@ void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned n
 		file << "\n\n";
 		for (auto& n : normals)
 		{
-			// file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+			file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
 		}
 
 
 		file << "\n\n";
 		for (auto& f : faces)
 		{
-			file << "f " 
-				<< f[0] << "//" << f[0] << " " 
-				<< f[1] << "//" << f[1] << " " 
+			file << "f "
+				<< f[0] << "//" << f[0] << " "
+				<< f[1] << "//" << f[1] << " "
 				<< f[2] << "//" << f[2] << " \n";
 		}
 

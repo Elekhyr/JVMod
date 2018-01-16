@@ -31,6 +31,5 @@ public:
 	double _ScaleX() const override;
 	double _ScaleY() const override;
 
-	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const override;
 	const Boxd& Box() const override;
 };

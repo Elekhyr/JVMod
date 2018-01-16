@@ -90,7 +90,7 @@ double Layersfield::Height(const double & x, const double & y) const
 {
 	double height = 0;
 	for (auto& field : mFields) {
-		height += field.second.Scalar(x, y);
+		height += field.second.Value(x, y);
 	}
 	return height;
 }
@@ -99,7 +99,7 @@ double Layersfield::HeightCell(unsigned i, unsigned j) const {
 	
 	double res = 0.;
 	for (auto& field : mFields){
-		res += field.second.Scalar(i, j);
+		res += field.second.CellValue(i, j);
 	}
 	return res;
 }
@@ -145,7 +145,7 @@ void Layersfield::Thermal(const int temp)
 		for (unsigned j = 0; j < mNY; j++)
 		{
 			std::vector<Math::Vec2u> voisins = _Voisin4(i,j);
-			const double h_bedrock = _Field(mNames[0]).Scalar(i, j);
+			const double h_bedrock = _Field(mNames[0]).CellValue(i, j);
 			for (Math::Vec2u v : voisins)
 			{
 				delta_h += h_bedrock - Height(v.x, v.y);
@@ -153,8 +153,8 @@ void Layersfield::Thermal(const int temp)
 			if (delta_h > delta_h_0)
 			{
 				const double h_transfo = k*(delta_h - delta_h_0);
-				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].Scalar(i, j) - h_transfo;
-				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].Scalar(i, j) + h_transfo;
+				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].CellValue(i, j) - h_transfo;
+				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].CellValue(i, j) + h_transfo;
 			}
 		}
 	}
@@ -166,7 +166,6 @@ void Layersfield::Save(const std::string& path)
 {
 	unsigned char *data = new unsigned char[mNY * mNX * 3];
 
-	std::string* p_str = &mNames[0];
 	for (auto& name : mNames) {
 		unsigned n = 0;
 		auto& mScalar = mFields[name];
@@ -176,17 +175,16 @@ void Layersfield::Save(const std::string& path)
 		{
 			for (unsigned i = 0; i < mNX; ++i)
 			{
-				if (mScalar.Scalar(i, j) != 0)
+				if (mScalar.Value(i, j) != 0)
 				{
-					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
-					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
-					data[n++] = static_cast<unsigned char>((mScalar.Scalar(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
 				}
 				else
 					n += 3;
 			}
 		}
-		p_str = &name;
 	}
 	
 		stbi_write_jpg(path.c_str(), int(mNY), int(mNX), 3, data, 100);

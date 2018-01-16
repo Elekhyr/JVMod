@@ -33,8 +33,8 @@ public:
 	Scalarfield(const Boxd& boudingBox, double zmin, double zmax, double nbX, double nbY);
 	const Boxd& _Box() const;
 
-	double Scalar(const double& x, const double& y) const;
-	double Scalar(unsigned i, unsigned j) const;
+	double Value(const double& x, const double& y) const;
+	double CellValue(unsigned i, unsigned j) const;
 	Math::Vec3d Vertice(unsigned i, unsigned j) const;
 	unsigned GridXIndex(const double& x) const;
 	unsigned GridYIndex(const double& y) const;

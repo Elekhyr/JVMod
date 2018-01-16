@@ -11,7 +11,7 @@ const Boxd& Scalarfield::_Box() const
 	return mBox;
 }
 
-double Scalarfield::Scalar(const double& x, const double& y) const
+double Scalarfield::Value(const double& x, const double& y) const
 {
 	// Local coordinates between [0..1]
 	double u = (x - mBox.a.x) / (mScaleX);
@@ -33,7 +33,7 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	return BilinearInterpolation(row, col, u, v);
 }
 
-double Scalarfield::Scalar(unsigned i, unsigned j) const
+double Scalarfield::CellValue(unsigned i, unsigned j) const
 {
 	return mScalars[j][i];
 }
@@ -42,7 +42,7 @@ Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
 {
 	const double x = i / static_cast<double>(mScalars[0].size()) + mBox.a.x;
 	const double y = j / static_cast<double>(mScalars.size()) + mBox.a.y;
-	return Math::Vec3d(x, y, Scalar(i, j));
+	return Math::Vec3d(x, y, Value(i, j));
 }
 
 unsigned Scalarfield::GridXIndex(const double & x) const
@@ -102,7 +102,7 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 			unsigned j = 0;
 			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				double z = Scalar(i, j);
+				double z = Value(i, j);
 				file << "v " << x << " " << y << " " << z << "\n";
 				auto normal = Math::Vec3d();// Normal(x, y);
 				normals.push_back({ normal.x, normal.y, normal.z });
@@ -285,16 +285,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	double result;
 	
 	if (u + v < 1) {
-		double n00 = Scalar(col, row);
+		double n00 = Value(col, row);
 		result = n00;
 		if (row + 1 < mNY) {
-			double n01 = Scalar(col, row+1);
+			double n01 = Value(col, row+1);
 			result -= v * n00;
 			result += v * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Scalar(col+1, row);
+			double n10 = Value(col+1, row);
 			result -= u * n00;
 			result += u * n10;
 		}
@@ -302,16 +302,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	else {
 		double n11 = 0.;
 		if (col+1 < mNX && row+1 < mNY)
-			n11 = Scalar(col+1, row+1);
+			n11 = Value(col+1, row+1);
 		result = n11;
 		if (row + 1 < mNY) {
-			double n01 = Scalar(col, row+1);
+			double n01 = Value(col, row+1);
 			result -= (1.-v) * n11;
 			result += (1.-v) * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Scalar(col+1, row);
+			double n10 = Value(col+1, row);
 			result -= (1.-u) * n11;
 			result += (1.-u) * n10;
 		}

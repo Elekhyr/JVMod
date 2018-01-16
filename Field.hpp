@@ -36,6 +36,8 @@ public:
 	double HorizonSlope(const Math::Vec3d& pos, const Math::Vec2d& dir) const;
 	bool Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const;
 
+	void ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const;
+
 	/**
 	 * Compute the drain area of the field
 	 */
@@ -60,8 +62,6 @@ public:
 	 * Compute the stream power map
 	 */
 	virtual Scalarfield StreamPowerMap() const;
-
-	void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
 
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
