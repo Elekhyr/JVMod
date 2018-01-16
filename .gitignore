@@ -264,5 +264,11 @@ __pycache__/
 .vscode/
 Build/
 CMakeLists.txt
+/wtf2.png
+/wtf2.jpg
+/wtf.png
+/wtf.jpg
+/WAW.jpg
+CMakeLists.txt
 /blank.jpg
 /noisified.jpg

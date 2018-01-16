@@ -299,62 +299,78 @@ double Field::DrainCellArea(unsigned i, unsigned j) const
 }
 
 void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, 
-	std::vector<Math::Vec2d> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const
+	std::vector<double> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const
 {
 	if (i > 0) {
 		if (Height(i,j)-Height(i-1,j) > 0) {
+			double difHeight = Height(i,j)-Height(i-1,j);
+			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j));
-			NeighboursSlopes.push_back(Slope(i-1, j));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (j > 0) {
 		if (Height(i,j)-Height(i, j-1) > 0) {
+			double difHeight = Height(i,j)-Height(i, j-1);
+			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i, j-1));
-			NeighboursSlopes.push_back(Slope(i, j-1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i, j-1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (i < _SizeX()) {
 		if (Height(i,j)-Height(i+1, j) > 0) {
+			double difHeight = Height(i,j)-Height(i+1,j);
+			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j));
-			NeighboursSlopes.push_back(Slope(i+1, j));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (j < _SizeY()) {
 		if (Height(i,j)-Height(i, j+1) > 0) {
+			double difHeight = Height(i,j)-Height(i,j+1);
+			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i, j+1));
-			NeighboursSlopes.push_back(Slope(i, j+1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i,j+1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (i > 0 && j > 0) {
 		if (Height(i,j)-Height(i-1, j-1) > 0) {
+			double difHeight = Height(i,j)-Height(i-1,j-1);
+			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j-1));
-			NeighboursSlopes.push_back(Slope(i-1, j-1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j-1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (i > 0 && j < _SizeY()) {
 		if (Height(i,j)-Height(i-1, j+1) > 0) {
+			double difHeight = Height(i,j)-Height(i-1,j+1);
+			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j+1));
-			NeighboursSlopes.push_back(Slope(i-1, j+1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i-1,j+1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (i < _SizeX() && j > 0) {
 		if (Height(i,j)-Height(i+1, j-1) > 0) {
+			double difHeight = Height(i,j)-Height(i+1,j-1);
+			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j-1));
-			NeighboursSlopes.push_back(Slope(i+1, j-1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j-1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 	if (i < _SizeX() && j < _SizeX()) {
 		if (Height(i,j)-Height(i+1, j+1) > 0) {
+			double difHeight = Height(i,j)-Height(i+1,j+1);
+			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j+1));
-			NeighboursSlopes.push_back(Slope(i+1, j+1));
-			NeighboursDifHeight.push_back(Height(i,j)-Height(i+1,j+1));
+			NeighboursSlopes.push_back(slope);
+			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
 }

@@ -17,6 +17,7 @@ class Layersfield : public Field
 {
 public:
 	Layersfield() = default;
+	Layersfield(unsigned nx, unsigned ny, Boxd box);
 	Layersfield(const std::string& name, const Scalarfield& field);
 
 	void AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(1., 0., 1.));
