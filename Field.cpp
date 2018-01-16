@@ -1,8 +1,11 @@
 #define _USE_MATH_DEFINES
 #include <cfloat>
 #include <cmath>
-#include "Field.hpp"
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <array>
+#include "Field.hpp"
 #include "Vec3.hpp"
 
 Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c){
@@ -453,4 +456,76 @@ bool Field::Visible(const Math::Vec3d& pos, const Math::Vec3d& point) const{
 	//TODO: Scale dir2D to be of length 1 step in the grid
 	
 	return pente > HorizonSlope(pos, dir2D);
+}
+
+void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned nbPointsY) const
+{
+	std::vector<std::array<unsigned, 3>> faces;
+	faces.reserve(nbPointsX * nbPointsY * 2);
+
+	std::vector<std::array<double, 3>> normals;
+	normals.reserve(nbPointsX * nbPointsY);
+	
+	unsigned n = 0;
+	unsigned i = 0;
+
+	std::ofstream file;
+	file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
+
+	try
+	{
+		file.open(path);
+	}
+	catch (std::ofstream::failure& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+
+	if (file.is_open())
+	{
+		file << "g heightfield\n\n";
+
+		const double step_x = _ScaleX() / double(nbPointsX);
+		const double step_y = _ScaleY() / double(nbPointsY);
+		for (double x = Box().a.x; i < nbPointsX; x += step_x, ++i)
+		{
+			unsigned j = 0;
+			for (double y = Box().a.y; j < nbPointsY; y += step_y, ++j)
+			{
+				double z = HeightCell(i, j);
+				file << "v " << x << " " << y << " " << z << "\n";
+				auto normal = Normal(x, y);
+				normals.push_back({normal.x, normal.y, normal.z});
+
+				if (i < nbPointsX - 1 && j < nbPointsY - 1)
+				{
+					faces.push_back({ n + j + 2,
+						n + j + 1,
+						n + j + nbPointsX + 1 });
+					faces.push_back({ n + j + nbPointsX + 1,
+						n + j + nbPointsX + 2,
+						n + j + 2 });
+				}
+			}
+			n += j;
+		}
+
+		file << "\n\n";
+		for (auto& n : normals)
+		{
+			// file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+		}
+
+
+		file << "\n\n";
+		for (auto& f : faces)
+		{
+			file << "f " 
+				<< f[0] << "//" << f[0] << " " 
+				<< f[1] << "//" << f[1] << " " 
+				<< f[2] << "//" << f[2] << " \n";
+		}
+
+		file.close();
+	}
 }

@@ -30,7 +30,7 @@ public:
 	virtual ~Scalarfield() = default;
 	Scalarfield();
 	Scalarfield(const std::string& imagePath, const Boxd& boudingBox, double zmin, double zmax);
-
+	Scalarfield(const Boxd& boudingBox, double zmin, double zmax, double nbX, double nbY);
 	const Boxd& _Box() const;
 
 	double Scalar(const double& x, const double& y) const;
