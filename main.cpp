@@ -7,11 +7,12 @@ int main()
 	box.a = Math::Vec2d(0, 0);
 	box.b = Math::Vec2d(1000, 1000);
 	
-	Scalarfield field("blank.jpg", box, -1, 1);
-	AnalyticHeightField ahf = AnalyticHeightField(box, 1, 3, 7);
+	Scalarfield field("blank.jpg", box, 0, 255);
+	AnalyticHeightField ahf = AnalyticHeightField(box, 1, 3, 3);
 
 	field.ScalarFromNoise(ahf);
 	field.Save("noisified.jpg");
 
+	field.ExportToObj("noisified.obj", 512, 512);
 	return 0;
 }

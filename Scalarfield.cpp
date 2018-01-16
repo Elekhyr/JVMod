@@ -237,7 +237,7 @@ void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
 		{
 			const double x = i / static_cast<double>(mNX) + mBox.a.x;
 			const double y = j / static_cast<double>(mNY) + mBox.a.y;
-			mScalars[i][j] = analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y));
+			mScalars[i][j] = mZMin + (mZMax - mZMin) * (analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y)) + 1) / 2;
 		}
 	}
 }
