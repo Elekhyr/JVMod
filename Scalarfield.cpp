@@ -11,7 +11,7 @@ const Boxd& Scalarfield::_Box() const
 	return mBox;
 }
 
-double Scalarfield::Scalar(const double& x, const double& y) const
+double Scalarfield::Value(const double& x, const double& y) const
 {
 	// Local coordinates between [0..1]
 	double u = (x - mBox.a.x) / (mScaleX);
@@ -33,7 +33,7 @@ double Scalarfield::Scalar(const double& x, const double& y) const
 	return BilinearInterpolation(row, col, u, v);
 }
 
-double Scalarfield::Scalar(unsigned i, unsigned j) const
+double Scalarfield::CellValue(unsigned i, unsigned j) const
 {
 	return mScalars[j][i];
 }
@@ -43,7 +43,7 @@ Scalarfield Scalarfield::operator+= (const Scalarfield sf)
 	assert(mNX == sf.mNX && mNY == sf.mNY);
 	for (unsigned j = 0; j < mNY; j++) {
 		for (unsigned i = 0; i < mNX; i++) {
-			mScalars[j][i] += sf.Scalar(i,j);
+			mScalars[j][i] += sf.CellValue(i,j);
 		}
 	}
 }
@@ -52,7 +52,7 @@ Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
 {
 	const double x = i / static_cast<double>(mScalars[0].size()) + mBox.a.x;
 	const double y = j / static_cast<double>(mScalars.size()) + mBox.a.y;
-	return Math::Vec3d(x, y, Scalar(i, j));
+	return Math::Vec3d(x, y, Value(i, j));
 }
 
 unsigned Scalarfield::GridXIndex(const double & x) const
@@ -82,6 +82,10 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 	std::vector<std::array<unsigned, 3>> faces;
 	faces.reserve(nbPointsX * nbPointsY * 2);
 
+
+	std::vector<std::array<double, 3>> normals;
+	normals.reserve(nbPointsX * nbPointsY);
+
 	unsigned n = 0;
 	unsigned i = 0;
 
@@ -108,15 +112,18 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 			unsigned j = 0;
 			for (double y = mBox.a.y; j < nbPointsY; y += step_y, ++j)
 			{
-				file << "v " << x << " " << y << " " << Scalar(x, y) << "\n";
-				
+				double z = Value(i, j);
+				file << "v " << x << " " << y << " " << z << "\n";
+				auto normal = Math::Vec3d();// Normal(x, y);
+				normals.push_back({ normal.x, normal.y, normal.z });
+
 				if (i < nbPointsX - 1 && j < nbPointsY - 1)
 				{
 					faces.push_back({ n + j + 2,
-						n + j + 1, 
-						n + j + nbPointsX + 1});
-					faces.push_back({ n + j + nbPointsX + 1, 
-						n + j + nbPointsX + 2, 
+						n + j + 1,
+						n + j + nbPointsX + 1 });
+					faces.push_back({ n + j + nbPointsX + 1,
+						n + j + nbPointsX + 2,
 						n + j + 2 });
 				}
 			}
@@ -124,9 +131,19 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 		}
 
 		file << "\n\n";
+		for (auto& n : normals)
+		{
+			//file << "vn " << n[0] << " " << n[1] << " " << n[2] << " \n";
+		}
+
+
+		file << "\n\n";
 		for (auto& f : faces)
 		{
-			file << "f " << f[0] << " " << f[1] << " " << f[2] << " \n";
+			file << "f "
+				<< f[0] << "//" << f[0] << " "
+				<< f[1] << "//" << f[1] << " "
+				<< f[2] << "//" << f[2] << " \n";
 		}
 
 		file.close();
@@ -267,7 +284,7 @@ void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
 		{
 			const double x = i / static_cast<double>(mNX) + mBox.a.x;
 			const double y = j / static_cast<double>(mNY) + mBox.a.y;
-			mScalars[i][j] = analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y));
+			mScalars[i][j] = mZMin + (mZMax - mZMin) * (analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y)) + 1) / 2;
 		}
 	}
 }
@@ -278,16 +295,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	double result;
 	
 	if (u + v < 1) {
-		double n00 = Scalar(col, row);
+		double n00 = Value(col, row);
 		result = n00;
 		if (row + 1 < mNY) {
-			double n01 = Scalar(col, row+1);
+			double n01 = Value(col, row+1);
 			result -= v * n00;
 			result += v * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Scalar(col+1, row);
+			double n10 = Value(col+1, row);
 			result -= u * n00;
 			result += u * n10;
 		}
@@ -295,16 +312,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	else {
 		double n11 = 0.;
 		if (col+1 < mNX && row+1 < mNY)
-			n11 = Scalar(col+1, row+1);
+			n11 = Value(col+1, row+1);
 		result = n11;
 		if (row + 1 < mNY) {
-			double n01 = Scalar(col, row+1);
+			double n01 = Value(col, row+1);
 			result -= (1.-v) * n11;
 			result += (1.-v) * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Scalar(col+1, row);
+			double n10 = Value(col+1, row);
 			result -= (1.-u) * n11;
 			result += (1.-u) * n10;
 		}
