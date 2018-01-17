@@ -38,6 +38,16 @@ double Scalarfield::Scalar(unsigned i, unsigned j) const
 	return mScalars[j][i];
 }
 
+Scalarfield Scalarfield::operator+= (const Scalarfield sf)
+{
+	assert(mNX == sf.mNX && mNY == sf.mNY);
+	for (unsigned j = 0; j < mNY; j++) {
+		for (unsigned i = 0; i < mNX; i++) {
+			mScalars[j][i] += sf.Scalar(i,j);
+		}
+	}
+}
+
 Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
 {
 	const double x = i / static_cast<double>(mScalars[0].size()) + mBox.a.x;

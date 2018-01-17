@@ -28,7 +28,10 @@ public:
 	std::vector<Math::Vec2u> _Voisin4(const unsigned i, const unsigned j) const;
 	std::vector<Math::Vec2u> _Voisin8(const unsigned i, const unsigned j) const;
 
+	// Applique un coup de température qui transforme la bedrock en sand
 	void Thermal(const int temp = 30);
+	// répartie le sand sur la bedrock si instable
+	void Stabilize();
 	double Height(const double& x, const double& y) const override;
 	double Height(const Math::Vec2d& pos) const override;
 	double HeightCell(unsigned i, unsigned j) const override;
