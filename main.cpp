@@ -1,5 +1,6 @@
 #include "Heightfield.hpp"
 #include "AnalyticHeightField.hpp"
+#include "Layersfield.hpp"
 
 int main()
 {
@@ -7,12 +8,15 @@ int main()
 	box.a = Math::Vec2d(0, 0);
 	box.b = Math::Vec2d(1000, 1000);
 	
-	Scalarfield field("blank.jpg", box, 0, 500);
-	AnalyticHeightField ahf = AnalyticHeightField(box, 1, 3, 3);
+	Scalarfield sf("/Users/lois/Documents/M2/MJV/JVMod/pente.png", box, 0, 500);
+	sf.Save("/Users/lois/Documents/M2/MJV/JVMod/pente2.png");
+	
+	Layersfield lf(512, 512, box);
+	lf.AddField("bedrock", sf);
+	
+	Scalarfield drain = lf.DrainArea();
+	
+	drain.Save("/Users/lois/Documents/M2/MJV/JVMod/drainTest.png");
 
-	field.ScalarFromNoise(ahf);
-	field.Save("noisified.jpg");
-
-	field.ExportToObj("noisified.obj", 512, 512);
 	return 0;
 }

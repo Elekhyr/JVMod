@@ -127,41 +127,58 @@ Math::Vec3d Field::Vertex(double x, double y) const{
 	return Math::Vec3d(x, y, Height(x,y));
 }
 
-Scalarfield Field::DrainArea() const
-{
+bool myCompare(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec2i>& b){
+	return a.first < b.first;
+}
+
+Scalarfield Field::DrainArea() const {
 	Scalarfield sf;
-	sf.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX()));
-	std::vector<Math::Vec3d> sorted_heights(_SizeX() *  _SizeY());
-	for (unsigned i = 0; i < _SizeX(); i++)
-	{
-		for (unsigned j = 0; j < _SizeY(); j++)
-		{
-			/*sorted_heights[i][j].x = double(i);
-			sorted_heights[i][j].y = double(j);
-			sorted_heights[i][j].z = double(HeightCell(i, j));*/
+	
+	sf.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX(), 1.));
+	
+	std::vector<std::pair<double, Math::Vec2i>> sorted_heights(_SizeX() *  _SizeY());
+	
+	for (unsigned i = 0; i < _SizeX(); i++) {
+		for (unsigned j = 0; j < _SizeY(); j++) {
+			sorted_heights[i * _SizeY() + j] =  std::make_pair(HeightCell(i, j), Math::Vec2i(i,j));
 		}
 	}
+	
+	std::sort(sorted_heights.rbegin(), sorted_heights.rend(), myCompare);
 
-	//std::sort(sorted_heights.begin(), sorted_heights.end()); // todo : comaprator with z;
-
-	for (unsigned i = 0; i < sorted_heights.size(); i++)
-	{/*
-			std::vector<Math::Vec2u> neighbour_coords;
-			std::vector<Math::Vec2d> neighbour_slopes;
-			std::vector<double> neighbour_heights_diff;
-			sf.mScalars[sorted_heights[i].x][sorted_heights[i].y] = 1;
-
-			FindNeighboursFlow(unsigned(sorted_heights[i].x), unsigned(sorted_heights[i].y), neighbour_coords, neighbour_slopes, neighbour_heights_diff);
+	for (auto& p : sorted_heights) {
+		
+		std::vector<Math::Vec2u> neighbour_coords;
+		std::vector<double> neighbour_slopes;
+		std::vector<double> neighbour_heights_diff;
+		FindNeighboursFlow(unsigned(p.second.x), unsigned(p.second.y), neighbour_coords, neighbour_slopes, neighbour_heights_diff);
+		
+		double total = 0.;
+		
+		for (auto& val : neighbour_slopes){
+			total += val;
+		}
+		
+		for (int i = 0; i < neighbour_coords.size(); ++i){
+			unsigned x, y;
+			x = neighbour_coords[i].x;
+			y = neighbour_coords[i].y;
 			
-			double total_diff = 0;
-			for (unsigned i = 0; i < neighbour_coords.size(); i++)
-			{
-				total_diff += neighbour_heights_diff[i];
+			sf.SetValue(x, y, sf.CellValue(x, y) + sf.CellValue(p.second.x, p.second.y) * neighbour_slopes[i] / total) ;
+		}
+	}
+	
+	sf.mZMin = DBL_MAX;
+	sf.mZMax = -DBL_MAX;
+	
+	for (int j = 0; j < _SizeY(); ++j){
+		for (int i = 0; i < _SizeX(); ++i){
+			if (sf.CellValue(i, j) > sf.mZMax){
+				sf.mZMax = sf.CellValue(i, j);
+			} else if (sf.CellValue(i, j) < sf.mZMin){
+				sf.mZMin = sf.CellValue(i, j);
 			}
-			for (unsigned i = 0; i < neighbour_coords.size(); i++)
-			{
-				sf.mScalars[neighbour_coords[i].x][neighbour_coords[i].y] += neighbour_heights_diff[i] / total_diff;
-			}*/
+		}
 	}
 
 	return std::move(sf);
@@ -219,19 +236,20 @@ Scalarfield Field::LightMap() const
 	return Scalarfield();
 }
 
+
+//Wetness me: https://i.ytimg.com/vi/x2CeDY9Ywhs/maxresdefault.jpg
 Scalarfield Field::WetnessMap() const
 {
 	// Scalarfield DrainAreaMap = DrainArea();
 	// Scalarfield SlopeMap = SlopeMap();
-	// Scalarfield WetnessMap = Scalarfield();
+	Scalarfield wetnessMap = Scalarfield();
 	// for (unsigned i = 0; i < _SizeX(); i++) {
 	// 	for (unsigned j = 0; j < _SizeY(); j++) {
 	// 		WetnessMap.mScalars[i][j] = std::log(DrainAreaMap.Scalar(i,j)/
 	// 										(1.+ SlopeMap.Scalar(i,j)));
 	// 	}
 	// }
-	// return WetnessMap;
-	return {};
+	return wetnessMap;
 }
 
 Scalarfield Field::StreamPowerMap() const
@@ -243,9 +261,9 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 {
 	Math::Vec2d n;
 
-	if (i + 1 < _SizeX() && i - 1 >= 0)
+	if (i + 1 < _SizeX() && i > 0)
 	{
-		if (i - 1 >= 0)
+		if (i > 0)
 		{
 			n.x = (HeightCell(j, i + 1) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
 		}
@@ -256,13 +274,13 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 
 		if (j + 1 < _ScaleY())
 		{
-			if (j - 1 >= 0)
+			if (j > 0)
 				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
 			else
 				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
 		}
 		else {
-			if (j - 1 >= 0)
+			if (j > 0)
 				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
 			else
 				n.y = HeightCell(j, i);
@@ -270,7 +288,7 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 	}
 	else
 	{
-		if (i - 1 >= 0)
+		if (i > 0)
 		{
 			n.x = (HeightCell(j, i) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
 		}
@@ -281,13 +299,13 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 
 		if (j + 1 < _SizeY())
 		{
-			if (j - 1 >= 0)
+			if (j > 0)
 				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
 			else
 				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
 		}
 		else {
-			if (j - 1 >= 0)
+			if (j > 0)
 				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
 			else
 				n.y = HeightCell(j, i);
@@ -297,17 +315,13 @@ Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 	return n;
 }
 
-double Field::DrainCellArea(unsigned i, unsigned j) const
-{
-	return 0.0;
-}
 
-void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> NeighboursCoords, 
-	std::vector<double> NeighboursSlopes, std::vector<double> NeighboursDifHeight) const
+void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u>& NeighboursCoords,
+	std::vector<double>& NeighboursSlopes, std::vector<double>& NeighboursDifHeight) const
 {
 	if (i > 0) {
-		if (Height(i,j)-Height(i-1,j) > 0) {
-			double difHeight = Height(i,j)-Height(i-1,j);
+		if (HeightCell(i,j)-HeightCell(i-1,j) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i-1,j);
 			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j));
 			NeighboursSlopes.push_back(slope);
@@ -315,26 +329,26 @@ void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> 
 		}
 	}
 	if (j > 0) {
-		if (Height(i,j)-Height(i, j-1) > 0) {
-			double difHeight = Height(i,j)-Height(i, j-1);
+		if (HeightCell(i,j)-HeightCell(i, j-1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i, j-1);
 			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i, j-1));
 			NeighboursSlopes.push_back(slope);
 			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
-	if (i < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j) > 0) {
-			double difHeight = Height(i,j)-Height(i+1,j);
+	if (i < _SizeX()-1) {
+		if (HeightCell(i,j)-HeightCell(i+1, j) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i+1,j);
 			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j));
 			NeighboursSlopes.push_back(slope);
 			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
-	if (j < _SizeY()) {
-		if (Height(i,j)-Height(i, j+1) > 0) {
-			double difHeight = Height(i,j)-Height(i,j+1);
+	if (j < _SizeY()-1) {
+		if (HeightCell(i,j)-HeightCell(i, j+1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i,j+1);
 			double slope = difHeight;
 			NeighboursCoords.push_back(Math::Vec2u(i, j+1));
 			NeighboursSlopes.push_back(slope);
@@ -342,35 +356,35 @@ void Field::FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u> 
 		}
 	}
 	if (i > 0 && j > 0) {
-		if (Height(i,j)-Height(i-1, j-1) > 0) {
-			double difHeight = Height(i,j)-Height(i-1,j-1);
+		if (HeightCell(i,j)-HeightCell(i-1, j-1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i-1,j-1);
 			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j-1));
 			NeighboursSlopes.push_back(slope);
 			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
-	if (i > 0 && j < _SizeY()) {
-		if (Height(i,j)-Height(i-1, j+1) > 0) {
-			double difHeight = Height(i,j)-Height(i-1,j+1);
+	if (i > 0 && j < _SizeY()-1) {
+		if (HeightCell(i,j)-HeightCell(i-1, j+1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i-1,j+1);
 			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i-1, j+1));
 			NeighboursSlopes.push_back(slope);
 			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
-	if (i < _SizeX() && j > 0) {
-		if (Height(i,j)-Height(i+1, j-1) > 0) {
-			double difHeight = Height(i,j)-Height(i+1,j-1);
+	if (i < _SizeX()-1 && j > 0) {
+		if (HeightCell(i,j)-HeightCell(i+1, j-1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i+1,j-1);
 			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j-1));
 			NeighboursSlopes.push_back(slope);
 			NeighboursDifHeight.push_back(difHeight);
 		}
 	}
-	if (i < _SizeX() && j < _SizeX()) {
-		if (Height(i,j)-Height(i+1, j+1) > 0) {
-			double difHeight = Height(i,j)-Height(i+1,j+1);
+	if (i < _SizeX()-1 && j < _SizeX()-1) {
+		if (HeightCell(i,j)-HeightCell(i+1, j+1) > 0) {
+			double difHeight = HeightCell(i,j)-HeightCell(i+1,j+1);
 			double slope = difHeight * M_SQRT1_2;
 			NeighboursCoords.push_back(Math::Vec2u(i+1, j+1));
 			NeighboursSlopes.push_back(slope);
@@ -397,11 +411,6 @@ double Field::Light(unsigned i, unsigned j) const
 Math::Vec2d Field::Slope(const Math::Vec2u pos) const
 {
 	return Slope(pos.x, pos.y);
-}
-
-double Field::DrainCellArea(const Math::Vec2u pos) const
-{
-	return DrainCellArea(pos.x, pos.y);
 }
 
 double Field::Wetness(const Math::Vec2u pos) const

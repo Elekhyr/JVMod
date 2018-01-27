@@ -20,12 +20,12 @@ double Heightfield::Height(const Math::Vec2d& pos) const
 
 unsigned Heightfield::_SizeX() const
 {
-	return mScalars[0].size();
+	return unsigned(mScalars[0].size());
 }
 
 unsigned Heightfield::_SizeY() const
 {
-	return mScalars.size();
+	return unsigned(mScalars.size());
 }
 
 double Heightfield::_ScaleX() const

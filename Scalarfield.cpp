@@ -38,7 +38,7 @@ double Scalarfield::CellValue(unsigned i, unsigned j) const
 	return mScalars[j][i];
 }
 
-Scalarfield Scalarfield::operator+= (const Scalarfield sf)
+const Scalarfield& Scalarfield::operator+= (const Scalarfield sf)
 {
 	assert(mNX == sf.mNX && mNY == sf.mNY);
 	for (unsigned j = 0; j < mNY; j++) {
@@ -46,6 +46,7 @@ Scalarfield Scalarfield::operator+= (const Scalarfield sf)
 			mScalars[j][i] += sf.CellValue(i,j);
 		}
 	}
+	return *this;
 }
 
 Math::Vec3d Scalarfield::Vertice(unsigned i, unsigned j) const
@@ -205,9 +206,9 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 	}
 }
 
-void Scalarfield::SetScalar(const unsigned i, const unsigned j, const double value)
+void Scalarfield::SetValue(const unsigned i, const unsigned j, const double value)
 {
-	mScalars[i][j] = value;
+	mScalars[j][i] = value;
 }
 
 Scalarfield::Scalarfield(): mScaleX(0), mScaleY(0), mZMin(0), mZMax(0), mNX(0), mNY(0)
@@ -252,8 +253,8 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		mScaleX = mBox.b.x - mBox.a.x;
 		mScaleY = mBox.b.y - mBox.a.y;
 
-		mNX = mScalars[0].size();
-		mNY = mScalars.size();
+		mNX = (int)mScalars[0].size();
+		mNY = (int)mScalars.size();
 		
 		stbi_image_free(image_data);
 	}

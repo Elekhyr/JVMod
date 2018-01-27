@@ -42,11 +42,11 @@ public:
 	virtual void ExportToObj(const std::string& path, unsigned nbPointsX, unsigned nbPointsY) const;
 	void Save(const std::string& path, const Color& color = Color::Gray);
 
-	void SetScalar(const unsigned i, const unsigned j, const double value);
+	void SetValue(const unsigned i, const unsigned j, const double value);
 
 	void ScalarFromNoise(AnalyticHeightField& analyticHeightField);
 
-	Scalarfield operator+= (const Scalarfield sf);
+	const Scalarfield& operator+= (const Scalarfield sf);
 
 protected:
 	friend class Field;
