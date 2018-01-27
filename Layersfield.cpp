@@ -5,7 +5,7 @@
 #define VISIBILITY_EPSILON 0.001
 
 Layersfield::Layersfield(unsigned nx, unsigned ny, Boxd box)
-	: mNX(nx), mNY(ny), mBox(box)
+	: mNX(nx), mNY(ny), mDeltaX(0), mDeltaY(0), mBox(box)
 {
 }
 
@@ -148,14 +148,14 @@ void Layersfield::Thermal(const int temp)
 			const double h_bedrock = _Field(mNames[0]).CellValue(i, j);
 			for (Math::Vec2u v : voisins)
 			{
-				delta_h += h_bedrock - Height(v.x, v.y);
+				delta_h += HeightCell(v.x, v.y) - h_bedrock;
 			}
-			if (delta_h > delta_h_0)
-			{
-				const double h_transfo = k*(delta_h - delta_h_0);
-				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].CellValue(i, j) - h_transfo;
-				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].CellValue(i, j) + h_transfo;
-			}
+			//if (delta_h > delta_h_0)
+			//{
+			//	const double h_transfo = k*(delta_h - delta_h_0);
+				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].CellValue(i, j);
+				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].CellValue(i, j);
+			//}
 		}
 	}
 
@@ -175,11 +175,11 @@ void Layersfield::Save(const std::string& path)
 		{
 			for (unsigned i = 0; i < mNX; ++i)
 			{
-				if (mScalar.Value(i, j) != 0)
+				if (mScalar.CellValue(i, j) != 0)
 				{
-					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
-					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
-					data[n++] = static_cast<unsigned char>((mScalar.Value(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
+					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
 				}
 				else
 					n += 3;
