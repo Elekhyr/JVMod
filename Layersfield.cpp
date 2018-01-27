@@ -53,9 +53,9 @@ std::vector<Math::Vec2u> Layersfield::_Voisin4(const unsigned i, const unsigned 
 		voisins.push_back(Math::Vec2u(i-1, j));
 	if (j > 0)
 		voisins.push_back(Math::Vec2u(i, j-1));
-	if (i < mNX)
+	if (i < mNX-1)
 		voisins.push_back(Math::Vec2u(i+1, j));
-	if (j < mNY)
+	if (j < mNY-1)
 		voisins.push_back(Math::Vec2u(i, j+1));
 	return voisins;
 }
@@ -69,18 +69,18 @@ std::vector<Math::Vec2u> Layersfield::_Voisin8(const unsigned i, const unsigned 
 		voisins.push_back(Math::Vec2u(i-1, j));
 	if (j > 0)
 		voisins.push_back(Math::Vec2u(i, j-1));
-	if (i < mNX)
+	if (i < mNX-1)
 		voisins.push_back(Math::Vec2u(i+1, j));
-	if (j < mNY)
+	if (j < mNY-1)
 		voisins.push_back(Math::Vec2u(i, j+1));
 	
 	if (i > 0 && j > 0)
 		voisins.push_back(Math::Vec2u(i-1, j-1));
-	if (i > 0 && j < mNY)
+	if (i > 0 && j < mNY-1)
 	voisins.push_back(Math::Vec2u(i-1, j+1));
-	if (i < mNX && j > 0)
+	if (i < mNX-1 && j > 0)
 	voisins.push_back(Math::Vec2u(i+1, j-1));
-	if (i < mNX && j < mNY)
+	if (i < mNX-1 && j < mNY-1)
 	voisins.push_back(Math::Vec2u(i+1, j+1));
 	
 	return voisins;
@@ -134,28 +134,80 @@ const Scalarfield& Layersfield::_Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
-	double delta_h = 0;
+	double delta_h = 0.;
 	//hauteur à partir de laquelle on commence à transformer
-	const double delta_h_0 = 0.01;
-	//coefficient de transformation
-	const double k = 0.5;
+	const double delta_h_0 = 0.1;
 
-	for (unsigned i = 0; i < mNX; i++)
+	//coefficient de transformation
+	const double k = 15;
+
+	for (unsigned j = 0; j < mNY; j++)
 	{
-		for (unsigned j = 0; j < mNY; j++)
+		for (unsigned i = 0; i < mNX; i++)
 		{
 			std::vector<Math::Vec2u> voisins = _Voisin4(i,j);
 			const double h_bedrock = _Field(mNames[0]).CellValue(i, j);
-			for (Math::Vec2u v : voisins)
+			for (auto& v : voisins)
 			{
-				delta_h += HeightCell(v.x, v.y) - h_bedrock;
+				delta_h += std::max((h_bedrock - HeightCell(v.x, v.y)),0.);
 			}
-			//if (delta_h > delta_h_0)
-			//{
-			//	const double h_transfo = k*(delta_h - delta_h_0);
-				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].CellValue(i, j);
-				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].CellValue(i, j);
-			//}
+			delta_h /= voisins.size();
+			if (delta_h > delta_h_0)
+			{
+				const double h_transfo = k*(delta_h - delta_h_0);
+				mFields[mNames[0]].mScalars[j][i] = mFields[mNames[0]].CellValue(i, j) - h_transfo;
+				mFields[mNames[1]].mScalars[j][i] = mFields[mNames[1]].CellValue(i, j) + h_transfo;
+			}
+		}
+	}
+}
+
+void Layersfield::Stabilize()
+{
+	//alpha: angle au repos.
+	int alpha = 40;
+	//epsilon: petite hauteur à faire tomber
+	double epsilon = 1.;
+	Scalarfield ecoulement(Box(), mFields[mNames[1]].mZMin , mFields[mNames[1]].mZMax, mNX, mNY);
+
+
+	//Premiere passe : écoulement du sable dans un scalarfield temporaire
+	for (unsigned j = 0; j < mNY; j++) {
+		for (unsigned i = 0; i < mNX; i++) {
+			std::vector<Math::Vec2u> NeighboursCoords;
+			std::vector<double> NeighboursSlopes;
+			std::vector<double> NeighboursDifSlope;
+			double totalSlope = 0.;
+
+			FindNeighboursFlow (i, j, NeighboursCoords, NeighboursSlopes, NeighboursDifSlope);
+
+			const double h_bedrock = _Field(mNames[0]).CellValue(i, j);
+			for (int v = 0; v < NeighboursCoords.size(); v++) {
+				//calcul pente totale
+				if (NeighboursSlopes[v] > std::tan(alpha)) {
+					totalSlope += NeighboursSlopes[v];
+				}
+			}
+
+			for (int v = 0; v < NeighboursCoords.size(); v++) {
+				//repartition sable sur les voisins (pondéré)
+				double slopeWeighted = NeighboursSlopes[v] / totalSlope;
+				//FAUX : attention à la hauteur du sable et pas que à la hauteur de tout
+				if (NeighboursSlopes[v] > std::tan(alpha)) {
+					//Attention à l'arrêt de l'angle limite (?) -> on fait des petits pas
+					//Au pire on dépasse d'une itération
+					double deplacement = std::min(epsilon, mFields[mNames[1]].CellValue(i, j)) * slopeWeighted;///*hauteur de sable restante*/);
+					mFields[mNames[1]].mScalars[j][i] -= deplacement;
+					ecoulement.mScalars[NeighboursCoords[v].y][NeighboursCoords[v].x] += deplacement;
+				}
+			}
+		}
+	}
+
+	//somme du scalarfield écoulement avec la couche de sable
+	for (unsigned j = 0; j < mNY; j++) {
+		for (unsigned i = 0; i < mNX; i++) {
+			mFields[mNames[1]].mScalars[j][i] += ecoulement.mScalars[j][i];
 		}
 	}
 
