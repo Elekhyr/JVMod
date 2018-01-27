@@ -270,6 +270,7 @@ Scalarfield::Scalarfield(const Boxd& boudingBox, double zmin, double zmax, doubl
 	mScaleY = mBox.b.y - mBox.a.y;
 	mNX = nbX;
 	mNY = nbY;
+	mScalars = std::vector<std::vector<double>>(nbY, std::vector<double>(nbX));
 	for (int j = 0; j < nbY; j++) {
 		for (int i = 0; i < nbX; i++) {
 			mScalars[j][i] = 0.;
