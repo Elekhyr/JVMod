@@ -158,9 +158,9 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 		unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size()];
 		unsigned n = 0;
 
-		for (unsigned i = 0; i < mScalars.size(); ++i)
+		for (int i = int(mScalars.size())-1; i >= 0 ; --i)
 		{
-			for (unsigned j = 0; j < mScalars[i].size(); ++j)
+			for (int j = 0; j < mScalars[i].size(); ++j)
 			{
 				data[n] = unsigned((mScalars[i][j] - mZMin) * 255 / (mZMax - mZMin));
 				++n;
@@ -176,9 +176,9 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 		unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size() * 3];
 		unsigned n = 0;
 
-		for (unsigned i = 0; i < mScalars.size(); ++i)
+		for (int i = int(mScalars.size())-1; i >= 0 ; --i)
 		{
-			for (unsigned j = 0; j < mScalars[i].size(); ++j)
+			for (int j = 0; j < mScalars[i].size(); ++j)
 			{
 				unsigned r = 0;
 				unsigned g = 0;

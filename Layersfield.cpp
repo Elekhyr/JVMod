@@ -235,7 +235,7 @@ void Layersfield::Save(const std::string& path)
 		auto& mScalar = mFields[name];
 		auto& mColor = mColors[name];
 
-		for (unsigned j = 0; j < mNY; ++j)
+		for (int j = int(mNY)-1; j >= 0; --j)
 		{
 			for (unsigned i = 0; i < mNX; ++i)
 			{
