@@ -134,6 +134,11 @@ const Scalarfield& Layersfield::_Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
+	//verification du nombre de layers et ajout du sand si 1 seul layer
+	if (mFields.size() < 2){
+		AddEmptyField("sand");
+	}
+
 	double delta_h = 0.;
 	//hauteur à partir de laquelle on commence à transformer
 	const double delta_h_0 = 0.1;
@@ -162,55 +167,62 @@ void Layersfield::Thermal(const int temp)
 	}
 }
 
+bool myCompareVec(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec2i>& b){
+	return a.first < b.first;
+}
+
 void Layersfield::Stabilize()
 {
 	//alpha: angle au repos.
-	int alpha = 40;
+	int alpha = 30;
 	//epsilon: petite hauteur à faire tomber
 	double epsilon = 1.;
-	Scalarfield ecoulement(Box(), mFields[mNames[1]].mZMin , mFields[mNames[1]].mZMax, mNX, mNY);
 
+	Scalarfield ecoulement(Box(), mFields[mNames[1]].mZMin , mFields[mNames[1]].mZMax, mNX, mNY);
+	std::vector<std::pair<double, Math::Vec2i>> sorted_heights(_SizeX() * _SizeY());
+	
+	for (unsigned i = 0; i < _SizeX(); i++) {
+		for (unsigned j = 0; j < _SizeY(); j++) {
+			sorted_heights[i * _SizeY() + j] = std::make_pair(HeightCell(i, j), Math::Vec2i(i,j));
+		}
+	}
+
+	std::sort(sorted_heights.rbegin(), sorted_heights.rend(), myCompareVec);
 
 	//Premiere passe : écoulement du sable dans un scalarfield temporaire
-	for (unsigned j = 0; j < mNY; j++) {
-		for (unsigned i = 0; i < mNX; i++) {
-			std::vector<Math::Vec2u> NeighboursCoords;
-			std::vector<double> NeighboursSlopes;
-			std::vector<double> NeighboursDifSlope;
-			double totalSlope = 0.;
+	for (auto& p : sorted_heights) {
+		unsigned i = unsigned(p.second.x); //coordonnées de la case en cours de traitement
+		unsigned j = unsigned(p.second.y);
+		std::vector<Math::Vec2u> neighbour_coords;
+		std::vector<double> neighbour_slopes;
+		std::vector<double> neighbour_heights_diff;
+		FindNeighboursFlow(i, j, neighbour_coords, neighbour_slopes, neighbour_heights_diff);
+		
+		double totalSlope = 0.;
 
-			FindNeighboursFlow (i, j, NeighboursCoords, NeighboursSlopes, NeighboursDifSlope);
-
-			const double h_bedrock = _Field(mNames[0]).CellValue(i, j);
-			for (int v = 0; v < NeighboursCoords.size(); v++) {
-				//calcul pente totale
-				if (NeighboursSlopes[v] > std::tan(alpha)) {
-					totalSlope += NeighboursSlopes[v];
-				}
+		for (auto& val : neighbour_slopes) {
+			//calcul pente totale
+			if (val > std::tan(alpha)) {
+				totalSlope += val;
 			}
+		}
 
-			for (int v = 0; v < NeighboursCoords.size(); v++) {
+		for (int v = 0; v < neighbour_coords.size(); v++) {
 				//repartition sable sur les voisins (pondéré)
-				double slopeWeighted = NeighboursSlopes[v] / totalSlope;
-				//FAUX : attention à la hauteur du sable et pas que à la hauteur de tout
-				if (NeighboursSlopes[v] > std::tan(alpha)) {
-					//Attention à l'arrêt de l'angle limite (?) -> on fait des petits pas
-					//Au pire on dépasse d'une itération
-					double deplacement = std::min(epsilon, mFields[mNames[1]].CellValue(i, j)) * slopeWeighted;///*hauteur de sable restante*/);
-					mFields[mNames[1]].mScalars[j][i] -= deplacement;
-					ecoulement.mScalars[NeighboursCoords[v].y][NeighboursCoords[v].x] += deplacement;
-				}
+			//FAUX : attention à la hauteur du sable et pas que à la hauteur de tout
+			if (neighbour_slopes[v] > std::tan(alpha)) {
+				double slopeWeighted = neighbour_slopes[v] / totalSlope;
+				//Attention à l'arrêt de l'angle limite (?) -> on fait des petits pas
+				//Au pire on dépasse d'une itération
+				double deplacement = std::min(epsilon, mFields[mNames[1]].CellValue(i, j)) * slopeWeighted;///*hauteur de sable restante*/);
+				mFields[mNames[1]].mScalars[j][i] -= deplacement;
+				ecoulement.mScalars[neighbour_coords[v].y][neighbour_coords[v].x] += deplacement;
 			}
 		}
 	}
 
 	//somme du scalarfield écoulement avec la couche de sable
-	for (unsigned j = 0; j < mNY; j++) {
-		for (unsigned i = 0; i < mNX; i++) {
-			mFields[mNames[1]].mScalars[j][i] += ecoulement.mScalars[j][i];
-		}
-	}
-
+	mFields[mNames[1]] += ecoulement;
 }
 
 
@@ -223,7 +235,7 @@ void Layersfield::Save(const std::string& path)
 		auto& mScalar = mFields[name];
 		auto& mColor = mColors[name];
 
-		for (unsigned j = 0; j < mNY; ++j)
+		for (int j = int(mNY)-1; j >= 0; --j)
 		{
 			for (unsigned i = 0; i < mNX; ++i)
 			{

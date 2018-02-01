@@ -41,27 +41,27 @@ public:
 	/**
 	 * Compute the drain area of the field
 	 */
-	virtual Scalarfield DrainArea() const;
+	Scalarfield DrainArea() const;
 	
 	/**
 	 * Compute the slope map
 	 */
-	virtual std::pair<Scalarfield, Scalarfield> SlopeMap() const;
+	Scalarfield SlopeMap() const;
 
 	/**
 	 * Compute the lighting map
 	 */
-	virtual Scalarfield LightMap() const;
+	Scalarfield LightMap() const;
 
 	/**
 	 * Compute the wetness map
 	 */
-	virtual Scalarfield WetnessMap() const;
+	Scalarfield WetnessMap() const;
 
 	/**
 	 * Compute the stream power map
 	 */
-	virtual Scalarfield StreamPowerMap() const;
+	Scalarfield StreamPowerMap() const;
 
 	/**
 	* Compute the stream power map
@@ -69,7 +69,7 @@ public:
 	virtual Scalarfield GenerateVegetation(const unsigned density, const float radius, const unsigned width, const unsigned height, const Scalarfield& wetness);
 
 protected:
-	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
+	Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u>& NeighboursCoords,
 		std::vector<double>& NeighboursSlopes, std::vector<double>& NeighboursDifHeight) const;
 	virtual double Wetness(unsigned i, unsigned j) const;
