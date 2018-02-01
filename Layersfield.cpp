@@ -5,7 +5,7 @@
 #define VISIBILITY_EPSILON 0.001
 
 Layersfield::Layersfield(unsigned nx, unsigned ny, Boxd box)
-	: mNX(nx), mNY(ny), mDeltaX(0), mDeltaY(0), mBox(box)
+	: mBox(box), mNX(nx), mNY(ny), mDeltaX(0), mDeltaY(0)
 {
 }
 

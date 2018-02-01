@@ -8,12 +8,12 @@ int main()
 	box.b = Math::Vec2d(1000, 1000);
 	
 	Scalarfield field1("heightfield.png", box, 0, 500);
-	Scalarfield field2("hf.jpg", box, 0, 500);
 
-	Layersfield lf(512, 512, box);
-	lf.AddField("f1", field1, Math::Vec3d(0.6, 0.4, 0.1));
-	lf.AddField("f2", field2, Math::Vec3d(0.4, 0.8, 0.8));
+	Layersfield lf("becrock", field1);
+
+	lf.GenerateVegetation(30, 3, 32, 32, lf.WetnessMap()).Save("trololol.png");
+	/*lf.AddField("f1", field1, Math::Vec3d(0.6, 0.4, 0.1));
 	lf.Thermal();
-	lf.Save("lferode.png");
+	lf.Save("lferode.png");*/
 	return 0;
 }

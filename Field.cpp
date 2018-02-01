@@ -7,6 +7,10 @@
 #include <array>
 #include "Field.hpp"
 #include "Vec3.hpp"
+#include <cassert>
+#include <random>
+#include <list>
+#include <unordered_map>
 
 Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c){
 	
@@ -538,4 +542,160 @@ void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned n
 
 		file.close();
 	}
+}
+
+/**
+ * http://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
+ *
+ *http://www.highperformancegraphics.org/wp-content/uploads/2017/Papers-Session6/HPG2017_FastMaximalPoissonDiskSampling.pdf
+ */
+Scalarfield Field::GenerateVegetation(const unsigned density, const float radius, const unsigned width, const unsigned height, const Scalarfield& wetness)
+{	
+	// init random engine
+	static std::random_device rd;
+	std::mt19937 e2(rd());
+
+	// init random distribution
+	const std::uniform_real_distribution<float> dist_x(0, width - 1);
+	const std::uniform_real_distribution<float> dist_y(0, height - 1);
+	const std::uniform_real_distribution<float> dist_r(radius, 2 * radius);
+	const std::uniform_real_distribution<float> dist_t(-M_PI, M_PI);
+
+	// samples
+	std::vector<Math::Vec2f> samples;
+
+	// active samples : samples where we are looking for more points in its neighbourhood
+	std::list<unsigned> active_samples;
+
+	// Cell side length
+	const float cell_length = radius / M_SQRT2;
+
+	const unsigned nx = floor(width / cell_length) + 1; // cells number in x dir
+	const unsigned ny = floor(height / cell_length) + 1; // cells number in y dir
+
+	std::vector<std::vector<int>> grid_coords(nx, std::vector<int>(ny, -1));
+
+	/*
+	// Random start point
+	float x = dist_x(e2);
+	float y = dist_y(e2);
+	*/
+	
+	// deterministic start point
+	float x = (width - 1) / 2;
+	float y = (height - 1) / 2;
+
+	samples.push_back(Math::Vec2f(x, y));
+	grid_coords[floor(x / cell_length)][floor(y / cell_length)] = 0;
+	active_samples.push_back(0);
+
+	while (!active_samples.empty())
+	{
+		// Choose a random point
+		const std::uniform_int_distribution<unsigned> dist_l(0, active_samples.size() - 1);
+		auto it = active_samples.begin();
+		std::advance(it, dist_l(e2));
+		const auto sample = samples[*it];
+
+		bool found = false;
+
+		for(unsigned k = 0; k < density; k++)
+		{
+			const float rho = dist_r(e2);
+			const float theta = dist_t(e2);
+
+			x = sample.x + rho * cos(theta);
+			y = sample.y + rho * sin(theta);
+
+			if (x >= 0 && x < width && 
+				y >= 0 && y < height)
+			{
+				const int col = floor(sample.x / cell_length);
+				const int row = floor(sample.y / cell_length);
+
+				// check neighbours collision
+				bool collide = false;
+				for (int i = -2; i <= 2; ++i)
+				{
+					for (int j = -2; j <= 2; ++j)
+					{
+						if(i == 0 && j == 0)
+							continue;
+
+						int tcol = col + i;
+						int trow = row + j;
+
+						if (tcol >= nx || tcol < 0)
+							tcol %= nx;
+
+						if (trow >= ny || trow < 0)
+							trow %= ny;
+
+						if (grid_coords[tcol][trow] != -1)
+						{
+							const auto& neighbour = samples[grid_coords[tcol][trow]];
+							if ((Math::Vec2f(x, y) - neighbour).Length() < radius) {
+								collide = true;
+								i = 2;
+								break;
+							}
+						}
+					}
+					
+				}
+
+				if (!collide)
+				{
+					found = true;
+					samples.push_back(Math::Vec2f(x, y));
+					grid_coords[floor(x / cell_length)][floor(y / cell_length)] = samples.size() - 1;
+					active_samples.push_back(samples.size() - 1);
+				}
+			}
+
+		}
+		if (!found)
+			it = active_samples.erase(it);
+	}
+
+	Boxd box;
+	box.a = Math::Vec2d(0, 0);
+	box.b = Math::Vec2d(width, height);
+
+
+	Scalarfield sf(Box(), 0, 1, _SizeX(), _SizeY());
+
+
+	for (int i = 0; i < sf.mNX;)
+	{
+		int k;
+		for (int j = 0; j < sf.mNY;)
+		{
+			int l;
+			for (k = 0; k < nx; ++k)
+			{
+				if (i + k >= sf.mNY)
+					break;
+
+				for (l = 0; l < ny; ++l)
+				{
+					if (j + l >= sf.mNY)
+						break;
+					if (grid_coords[k][l] != -1)
+					{
+						std::cout << wetness.CellValue(i + k, j + l) * density / 100 << std::endl;
+						if (wetness.CellValue(i + k, j + l) * density / 100 > 5)
+						{
+							const auto& v = samples[grid_coords[k][l]];
+							sf.SetValue(sf.mScalars.size() * v.x / width, sf.mScalars[0].size() * v.y / height, 255);
+						}
+					}
+				}
+				j += l;
+			}
+			i += k;
+		}
+	}
+
+	return sf;
 }

@@ -63,6 +63,11 @@ public:
 	 */
 	virtual Scalarfield StreamPowerMap() const;
 
+	/**
+	* Compute the stream power map
+	*/
+	virtual Scalarfield GenerateVegetation(const unsigned density, const float radius, const unsigned width, const unsigned height, const Scalarfield& wetness);
+
 protected:
 	virtual Math::Vec2d Slope(unsigned i, unsigned j) const;
 	virtual void FindNeighboursFlow(unsigned i, unsigned j, std::vector<Math::Vec2u>& NeighboursCoords,
