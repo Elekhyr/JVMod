@@ -582,8 +582,8 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 	*/
 	
 	// deterministic start point
-	float x = (width - 1) / 2;
-	float y = (height - 1) / 2;
+	float x = width / 2 - 1;
+	float y = height / 2 - 1;
 
 	samples.push_back(Math::Vec2f(x, y));
 	grid_coords[floor(x / cell_length)][floor(y / cell_length)] = 0;
@@ -610,8 +610,8 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 			if (x >= 0 && x < width && 
 				y >= 0 && y < height)
 			{
-				const int col = floor(sample.x / cell_length);
-				const int row = floor(sample.y / cell_length);
+				const int col = floor(x / cell_length);
+				const int row = floor(y / cell_length);
 
 				// check neighbours collision
 				bool collide = false;
@@ -619,9 +619,6 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 				{
 					for (int j = -2; j <= 2; ++j)
 					{
-						if(i == 0 && j == 0)
-							continue;
-
 						int tcol = col + i;
 						int trow = row + j;
 
@@ -650,6 +647,7 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 					samples.push_back(Math::Vec2f(x, y));
 					grid_coords[floor(x / cell_length)][floor(y / cell_length)] = samples.size() - 1;
 					active_samples.push_back(samples.size() - 1);
+					break;
 				}
 			}
 
@@ -663,37 +661,27 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 	box.b = Math::Vec2d(width, height);
 
 
-	Scalarfield sf(Box(), 0, 1, _SizeX(), _SizeY());
+	Scalarfield sf(Box(), 0, 255, _SizeX(), _SizeY());
 
 
-	for (int i = 0; i < sf.mNX;)
+	for (int i = 0; i < sf.mNX; i += width)
 	{
-		int k;
-		for (int j = 0; j < sf.mNY;)
+		for (int j = 0; j < sf.mNY; j += height)
 		{
-			int l;
-			for (k = 0; k < nx; ++k)
-			{
-				if (i + k >= sf.mNY)
-					break;
+			int dx = (i * (sf.mBox.b.x - sf.mBox.a.x) + sf.mBox.a.x) / sf.mScalars.size();
+			int dy = (j * (sf.mBox.b.y - sf.mBox.a.y) + sf.mBox.a.y) / sf.mScalars[0].size();
 
-				for (l = 0; l < ny; ++l)
+			for (int n = 0; n < samples.size(); ++n)
+			{
+				const auto& v = samples[n];
+				const auto r = wetness.Value(dx + v.x, dy + v.y);
+				if (r * density / 100 > 0.5)
 				{
-					if (j + l >= sf.mNY)
-						break;
-					if (grid_coords[k][l] != -1)
-					{
-						std::cout << wetness.CellValue(i + k, j + l) * density / 100 << std::endl;
-						if (wetness.CellValue(i + k, j + l) * density / 100 > 5)
-						{
-							const auto& v = samples[grid_coords[k][l]];
-							sf.SetValue(sf.mScalars.size() * v.x / width, sf.mScalars[0].size() * v.y / height, 255);
-						}
-					}
+					sf.SetValue(sf.GridXIndex(dx + v.x), sf.GridXIndex(dy + v.y), 255);
 				}
-				j += l;
 			}
-			i += k;
+				
+			
 		}
 	}
 

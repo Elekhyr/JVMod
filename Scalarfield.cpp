@@ -17,7 +17,7 @@ double Scalarfield::Value(const double& x, const double& y) const
 	double u = (x - mBox.a.x) / (mScaleX);
 	double v = (y - mBox.a.y) / (mScaleY);
 	
-	if (u > 1. || u < 0. || v > 1. || u < 1.)
+	if (u > 1. || u < 0. || v > 1. || v < 0.)
 		return 0.;
 	
 	// Cell location within grid
@@ -287,16 +287,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	double result;
 	
 	if (u + v < 1) {
-		double n00 = Value(col, row);
+		double n00 = CellValue(col, row);
 		result = n00;
 		if (row + 1 < mNY) {
-			double n01 = Value(col, row+1);
+			double n01 = CellValue(col, row+1);
 			result -= v * n00;
 			result += v * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Value(col+1, row);
+			double n10 = CellValue(col+1, row);
 			result -= u * n00;
 			result += u * n10;
 		}
@@ -304,16 +304,16 @@ double Scalarfield::BilinearInterpolation(const unsigned row, const unsigned col
 	else {
 		double n11 = 0.;
 		if (col+1 < mNX && row+1 < mNY)
-			n11 = Value(col+1, row+1);
+			n11 = CellValue(col+1, row+1);
 		result = n11;
 		if (row + 1 < mNY) {
-			double n01 = Value(col, row+1);
+			double n01 = CellValue(col, row+1);
 			result -= (1.-v) * n11;
 			result += (1.-v) * n01;
 		}
 		
 		if (col + 1 < mNX) {
-			double n10 = Value(col+1, row);
+			double n10 = CellValue(col+1, row);
 			result -= (1.-u) * n11;
 			result += (1.-u) * n10;
 		}
