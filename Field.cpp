@@ -135,6 +135,10 @@ Scalarfield Field::DrainArea() const {
 	Scalarfield sf;
 	
 	sf.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX(), 1.));
+	sf.mScaleX = _ScaleX();
+	sf.mScaleY = _ScaleY();
+	sf.mNX = _SizeX();
+	sf.mNY = _SizeY();
 	
 	std::vector<std::pair<double, Math::Vec2i>> sorted_heights(_SizeX() *  _SizeY());
 	
@@ -184,51 +188,29 @@ Scalarfield Field::DrainArea() const {
 	return std::move(sf);
 }
 
-std::pair<Scalarfield, Scalarfield> Field::SlopeMap() const
+Scalarfield Field::SlopeMap() const
 {
-	Scalarfield x_field;
-	Scalarfield y_field;
-
-	x_field.mBox = Box();
-	x_field.mScaleX = _ScaleX();
-	x_field.mScaleY = _ScaleY();
-
-
-	y_field.mBox = Box();
-	y_field.mScaleX = _ScaleX();
-	y_field.mScaleY = _ScaleY();
-
-	x_field.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX()));
-	y_field.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX()));
+	Scalarfield slope_field (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
 
 	double min_x = 0;
-	double min_y = 0;
 	double max_x = 0;
-	double max_y = 0;
 
 	for (unsigned j = 0; j < _SizeY(); ++j)
 	{
 		for (unsigned i = 0; i < _SizeX(); ++i)
 		{
-			auto slope = Slope(i, j);
-			x_field.mScalars[j][i] = slope.x;
-			y_field.mScalars[j][i] = slope.y;
+			slope_field.SetValue(i, j, Slope(i, j).Length());
 
-			min_x = std::min(min_x, slope.x);
-			min_y = std::min(min_y, slope.y);
-			max_x = std::max(max_x, slope.x);
-			max_y = std::max(max_y, slope.y);
+			min_x = std::min(min_x, slope_field.CellValue(i, j));
+			max_x = std::max(max_x, slope_field.CellValue(i, j));
 
 		}
 	}
 
-	x_field.mZMax = max_x;
-	x_field.mZMin = min_x;
+	slope_field.mZMax = max_x;
+	slope_field.mZMin = min_x;
 
-	y_field.mZMax = max_y;
-	y_field.mZMin = min_y;
-
-	return std::move(std::make_pair(std::move(x_field), std::move(y_field)));
+	return slope_field;
 }
 
 Scalarfield Field::LightMap() const
@@ -240,75 +222,93 @@ Scalarfield Field::LightMap() const
 //Wetness me: https://i.ytimg.com/vi/x2CeDY9Ywhs/maxresdefault.jpg
 Scalarfield Field::WetnessMap() const
 {
-	// Scalarfield DrainAreaMap = DrainArea();
-	// Scalarfield SlopeMap = SlopeMap();
-	Scalarfield wetnessMap = Scalarfield();
-	// for (unsigned i = 0; i < _SizeX(); i++) {
-	// 	for (unsigned j = 0; j < _SizeY(); j++) {
-	// 		WetnessMap.mScalars[i][j] = std::log(DrainAreaMap.Scalar(i,j)/
-	// 										(1.+ SlopeMap.Scalar(i,j)));
-	// 	}
-	// }
+	Scalarfield drainAreaMap = DrainArea();
+	Scalarfield slopeMap = SlopeMap();
+	Scalarfield wetnessMap (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
+	wetnessMap.mScaleX = _ScaleX();
+	wetnessMap.mScaleY = _ScaleY();
+	for (unsigned i = 0; i < _SizeX(); i++) {
+		for (unsigned j = 0; j < _SizeY(); j++) {
+			wetnessMap.SetValue(i, j, std::log(drainAreaMap.CellValue(i,j)/
+											   (1.+ slopeMap.CellValue(i,j))));
+			wetnessMap.mZMax = std::max(wetnessMap.mZMax, wetnessMap.CellValue(i, j));
+			wetnessMap.mZMin = std::min(wetnessMap.mZMin, wetnessMap.CellValue(i, j));
+			
+		}
+	}
 	return wetnessMap;
 }
 
 Scalarfield Field::StreamPowerMap() const
 {
-	return Scalarfield();
+	Scalarfield drainAreaMap = DrainArea();
+	Scalarfield slopeMap = SlopeMap();
+	Scalarfield streamMap (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
+	
+	for (unsigned i = 0; i < _SizeX(); i++) {
+		for (unsigned j = 0; j < _SizeY(); j++) {
+			streamMap.SetValue(i, j, drainAreaMap.CellValue(i,j) * slopeMap.CellValue(i,j));
+			streamMap.mZMax = std::max(streamMap.mZMax, streamMap.CellValue(i, j));
+			streamMap.mZMin = std::min(streamMap.mZMin, streamMap.CellValue(i, j));
+			
+		}
+	}
+	
+	return streamMap;
 }
 
 Math::Vec2d Field::Slope(unsigned i, unsigned j) const
 {
 	Math::Vec2d n;
 
-	if (i + 1 < _SizeX() && i > 0)
+	if (j + 1 < _SizeX())
 	{
-		if (i > 0)
+		if (j > 0)
 		{
-			n.x = (HeightCell(j, i + 1) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
+			n.x = (HeightCell(i, j + 1) - HeightCell(i, j - 1)) / (2 * _ScaleX() / _SizeX());
 		}
 		else
 		{
-			n.x = (HeightCell(j, i + 1) - HeightCell(j, i)) / (2 * _ScaleX() / _SizeX());
+			n.x = (HeightCell(i, j + 1) - HeightCell(i, j)) / (_ScaleX() / _SizeX());
 		}
 
-		if (j + 1 < _ScaleY())
+		if (i + 1 < _SizeY())
 		{
-			if (j > 0)
-				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			if (i > 0)
+				n.y = (HeightCell(i + 1, j) - HeightCell(i - 1, j)) / (2 * _ScaleY() / _SizeY());
 			else
-				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
+				n.y = (HeightCell(i + 1, j) - HeightCell(i, j)) / (_ScaleY() / _SizeY());
 		}
 		else {
-			if (j > 0)
-				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			if (i > 0)
+				n.y = (HeightCell(i, j) - HeightCell(i - 1, j)) / (_ScaleY() / _SizeY());
 			else
-				n.y = HeightCell(j, i);
+				n.y = 0;
 		}
 	}
 	else
 	{
-		if (i > 0)
+		if (j > 0)
 		{
-			n.x = (HeightCell(j, i) - HeightCell(j, i - 1)) / (2 * _ScaleX() / _SizeX());
+			n.x = (HeightCell(i, j) - HeightCell(i, j - 1)) / (_ScaleX() / _SizeX());
 		}
 		else
 		{
-			n.x = HeightCell(j, i);
+			n.x = 0;
 		}
 
-		if (j + 1 < _SizeY())
+		if (i + 1 < _SizeY())
 		{
-			if (j > 0)
-				n.y = (HeightCell(j + 1, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			if (i > 0)
+				n.y = (HeightCell(i + 1, j) - HeightCell(i - 1, j)) / (2 * _ScaleY() / _SizeY());
 			else
-				n.y = (HeightCell(j + 1, i) - HeightCell(j, i)) / (2 * _ScaleY() / _SizeY());
+				n.y = (HeightCell(i + 1, j) - HeightCell(i, j)) / (_ScaleY() / _SizeY());
 		}
 		else {
-			if (j > 0)
-				n.y = (HeightCell(j, i) - HeightCell(j - 1, i)) / (2 * _ScaleY() / _SizeY());
+			if (i > 0)
+				n.y = (HeightCell(i, j) - HeightCell(i - 1, j)) / (_ScaleY() / _SizeY());
 			else
-				n.y = HeightCell(j, i);
+				n.y = 0;
 		}
 	}
 
