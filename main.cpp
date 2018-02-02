@@ -1,4 +1,6 @@
 #include "Heightfield.hpp"
+#include "SimplexNoise.hpp"
+#include "AnalyticHeightField.hpp"
 #include "Layersfield.hpp"
 
 int main()

@@ -144,7 +144,7 @@ void Layersfield::Thermal(const int temp)
 	const double delta_h_0 = 0.1;
 
 	//coefficient de transformation
-	const double k = 15;
+	const double k = 0.1;
 
 	for (unsigned j = 0; j < mNY; j++)
 	{
@@ -174,9 +174,9 @@ bool myCompareVec(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec
 void Layersfield::Stabilize()
 {
 	//alpha: angle au repos.
-	int alpha = 30;
+	int alpha = 40;
 	//epsilon: petite hauteur à faire tomber
-	double epsilon = 1.;
+	double epsilon = 0.1;
 
 	Scalarfield ecoulement(Box(), mFields[mNames[1]].mZMin , mFields[mNames[1]].mZMax, mNX, mNY);
 	std::vector<std::pair<double, Math::Vec2i>> sorted_heights(_SizeX() * _SizeY());
@@ -208,8 +208,7 @@ void Layersfield::Stabilize()
 		}
 
 		for (int v = 0; v < neighbour_coords.size(); v++) {
-				//repartition sable sur les voisins (pondéré)
-			//FAUX : attention à la hauteur du sable et pas que à la hauteur de tout
+			//repartition sable sur les voisins (pondérée)
 			if (neighbour_slopes[v] > std::tan(alpha)) {
 				double slopeWeighted = neighbour_slopes[v] / totalSlope;
 				//Attention à l'arrêt de l'angle limite (?) -> on fait des petits pas
@@ -223,8 +222,27 @@ void Layersfield::Stabilize()
 
 	//somme du scalarfield écoulement avec la couche de sable
 	mFields[mNames[1]] += ecoulement;
+	// for (unsigned j = 0; j < mNY; j++) {
+	// 	for (unsigned i = 0; i < mNX; i++) {
+	// 		mFields[mNames[1]][j][i] += ecoulement.CellValue(i,j);
+	// 	}
+	// }
 }
 
+void Layersfield::SaveTotal(const std::string& path)
+{
+	// Scalarfield total(Box(), 0, 400, mNX, mNY);
+	Scalarfield total(mFields[mNames[0]]);
+	for (int i = 1; i < mNames.size(); i++) {
+		total += _Field(mNames[i]);
+	}
+	// for (int j = 0; j < mNY; j++) {
+	// 	for (int i = 0; i < mNX; i++) {
+	// 		total.mScalars[j][i] = HeightCell(i,j);
+	// 	}
+	// }
+	total.Save(path);
+}
 
 void Layersfield::Save(const std::string& path)
 {
@@ -244,6 +262,36 @@ void Layersfield::Save(const std::string& path)
 					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.x * 255) / (mScalar.mZMax - mScalar.mZMin));
 					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.y * 255) / (mScalar.mZMax - mScalar.mZMin));
 					data[n++] = static_cast<unsigned char>((mScalar.CellValue(i, j) - mScalar.mZMin) * (mColor.z * 255) / (mScalar.mZMax - mScalar.mZMin));
+				}
+				else
+					n += 3;
+			}
+		}
+	}
+	
+		stbi_write_jpg(path.c_str(), int(mNY), int(mNX), 3, data, 100);
+		
+		delete[] data;
+}
+
+void Layersfield::SaveFlatColor(const std::string& path)
+{
+	unsigned char *data = new unsigned char[mNY * mNX * 3];
+
+	for (auto& name : mNames) {
+		unsigned n = 0;
+		auto& mScalar = mFields[name];
+		auto& mColor = mColors[name];
+
+		for (int j = int(mNY)-1; j >= 0; --j)
+		{
+			for (unsigned i = 0; i < mNX; ++i)
+			{
+				if (mScalar.CellValue(i, j) >= 0.01)
+				{
+					data[n++] = static_cast<unsigned char>(mColor.x * 255);
+					data[n++] = static_cast<unsigned char>(mColor.y * 255);
+					data[n++] = static_cast<unsigned char>(mColor.z * 255);
 				}
 				else
 					n += 3;

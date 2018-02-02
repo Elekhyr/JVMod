@@ -46,7 +46,7 @@ public:
 
 	void ScalarFromNoise(AnalyticHeightField& analyticHeightField);
 
-	const Scalarfield& operator+= (const Scalarfield sf);
+	const Scalarfield& operator+= (const Scalarfield& sf);
 
 protected:
 	friend class Field;

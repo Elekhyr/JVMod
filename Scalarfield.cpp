@@ -40,7 +40,7 @@ double Scalarfield::CellValue(unsigned i, unsigned j) const
 	return mScalars[j][i];
 }
 
-const Scalarfield& Scalarfield::operator+= (const Scalarfield sf)
+const Scalarfield& Scalarfield::operator+= (const Scalarfield& sf)
 {
 	assert(mNX == sf.mNX && mNY == sf.mNY);
 	for (unsigned j = 0; j < mNY; j++) {
