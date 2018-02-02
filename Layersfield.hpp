@@ -18,10 +18,10 @@ class Layersfield : public Field
 public:
 	Layersfield() = default;
 	Layersfield(unsigned nx, unsigned ny, Boxd box);
-	Layersfield(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(0., 0., 1.));
+	Layersfield(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(0.25, 0.1, 0.05));
 
-	void AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(1., 0., 1.));
-	void AddEmptyField(const std::string& name, const Math::Vec3d& color = Math::Vec3d(1.,0.,1.));
+	void AddField(const std::string& name, const Scalarfield& field, const Math::Vec3d& color = Math::Vec3d(0.9, 0.7, 0.45));
+	void AddEmptyField(const std::string& name, const Math::Vec3d& color = Math::Vec3d(0.9, 0.7, 0.45));
 	const Scalarfield& _Field(const std::string& field) const;
 	const Boxd& Box() const override;
 
@@ -42,6 +42,8 @@ public:
 	double _ScaleY() const override;
 	
 	void Save(const std::string& path);
+	void SaveFlatColor(const std::string& path);
+	void SaveTotal(const std::string& path);
 
 private:
 	std::unordered_map<std::string, Scalarfield> mFields;
