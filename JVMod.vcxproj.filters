@@ -63,6 +63,9 @@
     <ClInclude Include="SimplexNoise.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,6 +90,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="SimplexNoise.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

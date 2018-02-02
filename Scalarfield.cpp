@@ -5,6 +5,8 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "Scalarfield.hpp"
+#include <chrono>
+#include "Logger.h"
 
 const Boxd& Scalarfield::_Box() const
 {
@@ -80,6 +82,10 @@ unsigned Scalarfield::GridYIndex(const double & y) const
 
 void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX, const unsigned nbPointsY) const
 {
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+	olog(Info) << __FUNCTION__ << " has been executed in : ";
+#endif
 	std::vector<std::array<unsigned, 3>> faces;
 	faces.reserve(nbPointsX * nbPointsY * 2);
 
@@ -149,6 +155,11 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 
 		file.close();
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+#endif
 }
 
 void Scalarfield::Save(const std::string& path, const Color& color)

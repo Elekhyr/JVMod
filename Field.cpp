@@ -556,10 +556,8 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 	std::mt19937 e2(rd());
 
 	// init random distribution
-	const std::uniform_real_distribution<float> dist_x(0, width - 1);
-	const std::uniform_real_distribution<float> dist_y(0, height - 1);
-	const std::uniform_real_distribution<float> dist_r(radius, 2 * radius);
-	const std::uniform_real_distribution<float> dist_t(-M_PI, M_PI);
+	std::uniform_real_distribution<float> dist_r(radius, 2 * radius);
+	std::uniform_real_distribution<float> dist_t(-M_PI, M_PI);
 
 	// samples
 	std::vector<Math::Vec2f> samples;
@@ -592,11 +590,9 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 	while (!active_samples.empty())
 	{
 		// Choose a random point
-#ifdef __APPLE__
+
 		std::uniform_int_distribution<unsigned> dist_l(0, active_samples.size() - 1);
-#else
-		const std::uniform_int_distribution<unsigned> dist_l(0, active_samples.size() - 1);
-#endif
+
 		auto it = active_samples.begin();
 		std::advance(it, dist_l(e2));
 		const auto sample = samples[*it];
