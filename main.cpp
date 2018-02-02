@@ -12,10 +12,23 @@ int main()
 	
 	Scalarfield field1("heightfield.png", box, 0, 200);
 	field1.ExportToObj("camarcheopupas.obj", 512, 512);
-	
-	Layersfield lf("becrock", field1);
+	field1.Save("saved.png");
 
-	lf.AddField("veget", lf.GenerateVegetation(50, 2, 512, 512, lf.WetnessMap()), Math::Vec3d(0, 1, 0));
+	Scalarfield field(box, 0, 200, 512, 512);
+	AnalyticHeightField ahf;
+	field.ScalarFromNoise(ahf);
+
+	Layersfield lf("bedrock", field1);
+	lf.DrainArea().Save("drainarea.png");
+	lf.Thermal();
+	lf.Stabilize();
+	lf.SlopeMap().Save("slopemap.png");
+	lf.StreamPowerMap().Save("streampower.png");
+	auto map = lf.WetnessMap();
+	map.Save("wetness.png");
+	lf.GenerateVegetation(50, 2, 32, 32, map).Save("veget.png");
+
+	lf.AddField("veget", lf.GenerateVegetation(50, 2, 32, 32, map), Math::Vec3d(0, 1, 0));
 
 	lf.Save("trololo.png");
 	/*lf.AddField("f1", field1, Math::Vec3d(0.6, 0.4, 0.1));

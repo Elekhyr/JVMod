@@ -1,6 +1,7 @@
 ﻿#include "Layersfield.hpp"
 #define STB_IMAGE_WRITE_STATIC
 #include "stb_image_write.h"
+#include "Logger.h"
 
 #define VISIBILITY_EPSILON 0.001
 
@@ -134,6 +135,9 @@ const Scalarfield& Layersfield::_Field(const std::string& field) const
 
 void Layersfield::Thermal(const int temp)
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	//verification du nombre de layers et ajout du sand si 1 seul layer
 	if (mFields.size() < 2){
 		AddEmptyField("sand");
@@ -165,6 +169,11 @@ void Layersfield::Thermal(const int temp)
 			}
 		}
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 }
 
 bool myCompareVec(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec2i>& b){
@@ -173,6 +182,9 @@ bool myCompareVec(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec
 
 void Layersfield::Stabilize()
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	//alpha: angle au repos.
 	int alpha = 40;
 	//epsilon: petite hauteur à faire tomber
@@ -227,6 +239,11 @@ void Layersfield::Stabilize()
 	// 		mFields[mNames[1]][j][i] += ecoulement.CellValue(i,j);
 	// 	}
 	// }
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 }
 
 void Layersfield::SaveTotal(const std::string& path)

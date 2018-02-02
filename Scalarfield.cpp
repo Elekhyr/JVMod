@@ -83,9 +83,9 @@ unsigned Scalarfield::GridYIndex(const double & y) const
 void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX, const unsigned nbPointsY) const
 {
 #ifdef GIMME_LOG_PLZ
-	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-	olog(Info) << __FUNCTION__ << " has been executed in : ";
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 #endif
+
 	std::vector<std::array<unsigned, 3>> faces;
 	faces.reserve(nbPointsX * nbPointsY * 2);
 
@@ -158,12 +158,16 @@ void Scalarfield::ExportToObj(const std::string& path, const unsigned nbPointsX,
 #ifdef GIMME_LOG_PLZ
 	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 #endif
 }
 
 void Scalarfield::Save(const std::string& path, const Color& color)
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
+
 	if (color == Color::Gray)
 	{
 		unsigned char *data = new unsigned char[mScalars.size() * mScalars[0].size()];
@@ -215,6 +219,11 @@ void Scalarfield::Save(const std::string& path, const Color& color)
 
 		delete[] data;
 	}
+#ifdef GIMME_LOG_PLZ
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 }
 
 void Scalarfield::SetValue(const unsigned i, const unsigned j, const double value)
@@ -228,6 +237,10 @@ Scalarfield::Scalarfield(): mScaleX(0), mScaleY(0), mZMin(0), mZMax(0), mNX(0), 
 
 Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, const double zmin, const double zmax)
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
+
 	mZMin = zmin;
 	mZMax = zmax;
 
@@ -269,6 +282,11 @@ Scalarfield::Scalarfield(const std::string& imagePath, const Boxd& boudingBox, c
 		
 		stbi_image_free(image_data);
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 }
 
 Scalarfield::Scalarfield(const Boxd& boudingBox, double zmin, double zmax, double nbX, double nbY)
@@ -281,6 +299,9 @@ Scalarfield::Scalarfield(const Boxd& boudingBox, double zmin, double zmax, doubl
 
 void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	for (unsigned i = 0; i < mNY; ++i)
 	{
 		for (unsigned j = 0; j < mNX; ++j)
@@ -290,6 +311,11 @@ void Scalarfield::ScalarFromNoise(AnalyticHeightField& analyticHeightField)
 			mScalars[i][j] = mZMin + (mZMax - mZMin) * (analyticHeightField.SimplexNoiseAt(Math::Vec2d(x,y)) + 1) / 2;
 		}
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 }
 
 

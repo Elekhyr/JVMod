@@ -11,6 +11,7 @@
 #include <random>
 #include <list>
 #include <unordered_map>
+#include "Logger.h"
 
 Math::Vec3d getTriangleNormal(const Math::Vec3d& a, const Math::Vec3d& b, const Math::Vec3d& c){
 	
@@ -136,6 +137,9 @@ bool myCompare(std::pair<double, Math::Vec2i>& a, std::pair<double, Math::Vec2i>
 }
 
 Scalarfield Field::DrainArea() const {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	Scalarfield sf;
 	
 	sf.mScalars = std::vector<std::vector<double>>(_SizeY(), std::vector<double>(_SizeX(), 1.));
@@ -188,12 +192,19 @@ Scalarfield Field::DrainArea() const {
 			}
 		}
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds > (t2 - t1).count();
+#endif
 	return std::move(sf);
 }
 
 Scalarfield Field::SlopeMap() const
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	Scalarfield slope_field (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
 
 	double min_x = 0;
@@ -213,7 +224,11 @@ Scalarfield Field::SlopeMap() const
 
 	slope_field.mZMax = max_x;
 	slope_field.mZMin = min_x;
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 	return slope_field;
 }
 
@@ -226,6 +241,9 @@ Scalarfield Field::LightMap() const
 //Wetness me: https://i.ytimg.com/vi/x2CeDY9Ywhs/maxresdefault.jpg
 Scalarfield Field::WetnessMap() const
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	Scalarfield drainAreaMap = DrainArea();
 	Scalarfield slopeMap = SlopeMap();
 	Scalarfield wetnessMap (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
@@ -240,11 +258,19 @@ Scalarfield Field::WetnessMap() const
 			
 		}
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 	return wetnessMap;
 }
 
 Scalarfield Field::StreamPowerMap() const
 {
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	Scalarfield drainAreaMap = DrainArea();
 	Scalarfield slopeMap = SlopeMap();
 	Scalarfield streamMap (Box(),DBL_MAX, 0, _SizeX(), _SizeY());
@@ -257,7 +283,11 @@ Scalarfield Field::StreamPowerMap() const
 			
 		}
 	}
-	
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 	return streamMap;
 }
 
@@ -546,11 +576,12 @@ void Field::ExportToObj(const std::string & path, unsigned nbPointsX, unsigned n
 
 /**
  * http://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
- *
- *http://www.highperformancegraphics.org/wp-content/uploads/2017/Papers-Session6/HPG2017_FastMaximalPoissonDiskSampling.pdf
  */
 Scalarfield Field::GenerateVegetation(const unsigned density, const float radius, const unsigned width, const unsigned height, const Scalarfield& wetness)
 {	
+#ifdef GIMME_LOG_PLZ
+	const std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+#endif
 	// init random engine
 	static std::random_device rd;
 	std::mt19937 e2(rd());
@@ -684,6 +715,10 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 			
 		}
 	}
+#ifdef GIMME_LOG_PLZ
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
+	olog(Info) << __FUNCTION__ << " has been executed in : " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+#endif
 	return sf;
 }

@@ -42,4 +42,4 @@ private:
 	tm				m_oLocalTime;
 };
 
-static logger olog("jvmod.log");
+static logger olog("jvmod2.log");
