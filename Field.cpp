@@ -678,7 +678,6 @@ Scalarfield Field::GenerateVegetation(const unsigned density, const float radius
 					samples.push_back(Math::Vec2f(x, y));
 					grid_coords[floor(x / cell_length)][floor(y / cell_length)] = samples.size() - 1;
 					active_samples.push_back(samples.size() - 1);
-					break;
 				}
 			}
 
